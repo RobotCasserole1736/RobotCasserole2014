@@ -31,8 +31,10 @@ public class RobotDrive6Motor implements IUtility {
         public final int value;
         static final int kFrontLeft_val = 0;
         static final int kFrontRight_val = 1;
-        static final int kRearLeft_val = 2;
-        static final int kRearRight_val = 3;
+        static final int kMidLeft_val = 2;
+        static final int kMidRight_val = 3;
+        static final int kRearLeft_val = 4;
+        static final int kRearRight_val = 5;
         /**
          * motortype: front left
          */
@@ -41,6 +43,14 @@ public class RobotDrive6Motor implements IUtility {
          * motortype: front right
          */
         public static final MotorType kFrontRight = new MotorType(kFrontRight_val);
+        /**
+         * motortype: mid left
+         */
+        public static final MotorType kMidLeft = new MotorType(kMidLeft_val);
+        /**
+         * motortype: mid right
+         */
+        public static final MotorType kMidRight = new MotorType(kMidRight_val);
         /**
          * motortype: rear left
          */
@@ -63,6 +73,8 @@ public class RobotDrive6Motor implements IUtility {
     protected double m_maxOutput;
     protected SpeedController m_frontLeftMotor;
     protected SpeedController m_frontRightMotor;
+    protected SpeedController m_midLeftMotor;
+    protected SpeedController m_midRightMotor;
     protected SpeedController m_rearLeftMotor;
     protected SpeedController m_rearRightMotor;
     protected boolean m_allocatedSpeedControllers;
@@ -74,19 +86,23 @@ public class RobotDrive6Motor implements IUtility {
      * Constructor for RobotDrive with 4 motors specified as SpeedController objects.
      * Speed controller input version of RobotDrive (see previous comments).
      * @param rearLeftMotor The back left SpeedController object used to drive the robot.
+     * @param midLeftMotor The mid left SpeedController object used to drive the robot
      * @param frontLeftMotor The front left SpeedController object used to drive the robot
      * @param rearRightMotor The back right SpeedController object used to drive the robot.
+     * @param midRightMotor The mid right SpeedController object used to drive the robot
      * @param frontRightMotor The front right SpeedController object used to drive the robot.
      */
-    public RobotDrive6Motor(SpeedController frontLeftMotor, SpeedController rearLeftMotor,
-            SpeedController frontRightMotor, SpeedController rearRightMotor) {
-        if (frontLeftMotor == null || rearLeftMotor == null || frontRightMotor == null || rearRightMotor == null) {
-            m_frontLeftMotor = m_rearLeftMotor = m_frontRightMotor = m_rearRightMotor = null;
+    public RobotDrive6Motor(SpeedController frontLeftMotor, SpeedController midLeftMotor, SpeedController rearLeftMotor,
+            SpeedController frontRightMotor, SpeedController midRightMotor, SpeedController rearRightMotor) {
+        if (frontLeftMotor == null || midLeftMotor == null || rearLeftMotor == null || frontRightMotor == null || midRightMotor == null || rearRightMotor == null) {
+            m_frontLeftMotor = m_midLeftMotor = m_rearLeftMotor = m_frontRightMotor = m_midRightMotor = m_rearRightMotor = null;
             throw new NullPointerException("Null motor provided");
         }
         m_frontLeftMotor = frontLeftMotor;
+        m_midLeftMotor = midLeftMotor;
         m_rearLeftMotor = rearLeftMotor;
         m_frontRightMotor = frontRightMotor;
+        m_midRightMotor = midRightMotor;
         m_rearRightMotor = rearRightMotor;
         m_sensitivity = kDefaultSensitivity;
         m_maxOutput = kDefaultMaxOutput;
@@ -468,6 +484,12 @@ public class RobotDrive6Motor implements IUtility {
             if (m_frontRightMotor != null) {
                 ((PWM) m_frontRightMotor).free();
             }
+            if (m_midLeftMotor != null) {
+                ((PWM) m_midLeftMotor).free();
+            }
+            if (m_midRightMotor != null) {
+                ((PWM) m_midRightMotor).free();
+            }
             if (m_rearLeftMotor != null) {
                 ((PWM) m_rearLeftMotor).free();
             }
@@ -488,6 +510,12 @@ public class RobotDrive6Motor implements IUtility {
         if (m_frontRightMotor != null) {
             m_frontRightMotor.set(0.0);
         }
+        if (m_midLeftMotor != null) {
+            m_midLeftMotor.set(0.0);
+        }
+        if (m_midRightMotor != null) {
+            m_midRightMotor.set(0.0);
+        }
         if (m_rearLeftMotor != null) {
             m_rearLeftMotor.set(0.0);
         }
@@ -501,6 +529,8 @@ public class RobotDrive6Motor implements IUtility {
         int motors = 0;
         if (m_frontLeftMotor != null) motors++;
         if (m_frontRightMotor != null) motors++;
+        if (m_midLeftMotor != null) motors++;
+        if (m_midRightMotor != null) motors++;
         if (m_rearLeftMotor != null) motors++;
         if (m_rearRightMotor != null) motors++;
         return motors;
