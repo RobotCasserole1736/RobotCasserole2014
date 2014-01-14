@@ -7,8 +7,10 @@
 
 package edu.wpi.first.wpilibj.templates;
 
-
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Talon;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -18,12 +20,63 @@ import edu.wpi.first.wpilibj.IterativeRobot;
  * directory.
  */
 public class MrRoboto extends IterativeRobot {
+    // Constants go here - 0's are probably placeholders
+    
+    // Talon motor IDs
+    public final int FRONT_LEFT_MTRID = 0;
+    public final int FRONT_RIGHT_MTRID = 0;
+    public final int MID_LEFT_MTRID = 0;
+    public final int MID_RIGHT_MTRID = 0;
+    public final int REAR_LEFT_MTRID = 0;
+    public final int REAR_RIGHT_MTRID = 0;
+    
+    // Transmission object IDs
+    public final int XMISSION_SOL1_ID = 0;
+    public final int XMISSION_SOL2_ID = 0;
+    public final int COMPRESSOR_RELAY_ID = 0;
+    public final int PRESSURE_SW_ID = 0;
+    
+    
+    // Variable/Object declarations go here
+    
+    // Drivetrain Talon motors + RobotDrive object
+    Talon frontLeftMotor;
+    Talon frontRightMotor;
+    Talon midLeftMotor;
+    Talon midRightMotor;
+    Talon rearLeftMotor;
+    Talon rearRightMotor;
+    RobotDrive6Motor driveTrain;
+    
+    // Transmission
+    Solenoid xmissionSol1, xmissionSol2;
+    Compressor xmissionCompressor;
+    
+    
+    // End variable/constant declaration
+    
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     public void robotInit() {
-
+        // Construct Talons
+        this.frontLeftMotor = new Talon(FRONT_LEFT_MTRID);
+        this.frontRightMotor = new Talon(FRONT_RIGHT_MTRID);
+        this.midLeftMotor = new Talon(MID_LEFT_MTRID);
+        this.midRightMotor = new Talon(MID_RIGHT_MTRID);
+        this.rearLeftMotor = new Talon(REAR_LEFT_MTRID);
+        this.rearRightMotor = new Talon(REAR_RIGHT_MTRID);
+        
+        // Construct RobotDrive
+        this.driveTrain = new RobotDrive6Motor(frontLeftMotor, midLeftMotor, rearLeftMotor, frontRightMotor, midRightMotor, rearRightMotor);
+        
+        // Construct transmission
+        this.xmissionSol1 = new Solenoid(XMISSION_SOL1_ID);
+        this.xmissionSol2 = new Solenoid(XMISSION_SOL2_ID);
+        this.xmissionCompressor = new Compressor(PRESSURE_SW_ID, COMPRESSOR_RELAY_ID);
+        
+        
     }
 
     /**
