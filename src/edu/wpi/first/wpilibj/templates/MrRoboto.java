@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -98,6 +99,10 @@ public class MrRoboto extends IterativeRobot {
      */
     public void testPeriodic() {
     
+    }
+    
+    public boolean isTargetHot() {
+        return SmartDashboard.getBoolean("HotTargetFound", false);
     }
     
 }
