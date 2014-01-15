@@ -9,6 +9,8 @@ package edu.wpi.first.wpilibj.templates;
 
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Talon;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -18,6 +20,28 @@ import edu.wpi.first.wpilibj.IterativeRobot;
  * directory.
  */
 public class MrRoboto extends IterativeRobot {
+    
+    final int JOYSTICKPORT = 1;
+    final int LEFTFRONTMOTORCHANNEL = 1;
+    final int RIGHTFRONTMOTORCHANNEL = 1;
+    final int LEFTMIDMOTORCHANNEL = 1;
+    final int RIGHTMIDMOTORCHANNEL = 1;
+    final int LEFTREARMOTORCHANNEL = 1;
+    final int RIGHTREARMOTORCHANNEL = 1;
+    
+    Joystick driverJoystick = new Joystick(JOYSTICKPORT);
+    Talon leftFrontMotor = new Talon(LEFTFRONTMOTORCHANNEL);
+    Talon rightFrontMotor = new Talon(RIGHTFRONTMOTORCHANNEL);
+    Talon leftMidMotor = new Talon(LEFTMIDMOTORCHANNEL);
+    Talon rightMidMotor = new Talon(RIGHTMIDMOTORCHANNEL);
+    Talon leftRearMotor = new Talon(LEFTREARMOTORCHANNEL);
+    Talon rightRearMotor = new Talon(RIGHTREARMOTORCHANNEL);
+    
+    
+    
+    RobotDrive6Motor driveTrain = new RobotDrive6Motor(leftFrontMotor, leftMidMotor, leftRearMotor, rightFrontMotor, rightMidMotor, rightRearMotor);
+    
+    
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -37,6 +61,8 @@ public class MrRoboto extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
+        
+        driveTrain.arcadeDrive(driverJoystick);
         
     }
     
