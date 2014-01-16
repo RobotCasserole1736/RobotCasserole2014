@@ -28,6 +28,9 @@ public class MrRoboto extends IterativeRobot {
     final int RIGHTMIDMOTORCHANNEL = 1;
     final int LEFTREARMOTORCHANNEL = 1;
     final int RIGHTREARMOTORCHANNEL = 1;
+    final int SHIFTERCHANNEL = 1;
+    final boolean SHIFTERHIGHPOSITION = true;
+    final int SHIFTBUTTONNUMBER = 1;
     
     Joystick driverJoystick = new Joystick(JOYSTICKPORT);
     Talon leftFrontMotor = new Talon(LEFTFRONTMOTORCHANNEL);
@@ -38,9 +41,13 @@ public class MrRoboto extends IterativeRobot {
     Talon rightRearMotor = new Talon(RIGHTREARMOTORCHANNEL);
     
     
+    private boolean shiftWasPressed; //*Stores prior pressed button value
+    
+    
+    
     
     RobotDrive6Motor driveTrain = new RobotDrive6Motor(leftFrontMotor, leftMidMotor, leftRearMotor, rightFrontMotor, rightMidMotor, rightRearMotor);
-    
+    Shifter shifter = new Shifter(SHIFTERCHANNEL, SHIFTERHIGHPOSITION);
     
     /**
      * This function is run when the robot is first started up and should be
@@ -64,6 +71,12 @@ public class MrRoboto extends IterativeRobot {
         
         driveTrain.arcadeDrive(driverJoystick);
         
+        boolean shifterPressed = driverJoystick.getRawButton(SHIFTBUTTONNUMBER);
+        if (shifterPressed == true && shiftWasPressed == false) {
+            shifter.Shift();
+        }
+        shiftWasPressed = shifterPressed;
+
     }
     
     /**
