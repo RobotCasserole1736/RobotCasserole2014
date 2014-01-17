@@ -76,8 +76,51 @@ public class Jaws {
         rollerTalon.set(-1);
     }
     
-    public void rollerOff()
+    public void offRoller()
     {
         rollerTalon.set(0);
     }
+    
+    public void floorIntake()
+    {
+        lowerJaw();
+        closeJaw();
+        intakeRoller();
+    }
+    
+    public void humanIntake()
+    {
+        raiseJaw();
+        openJaw();
+        offRoller();
+    }
+    
+    public void ballPossession()
+    {
+        raiseJaw();
+        closeJaw();
+        offRoller();
+    }
+    
+    public void floorPass()
+    {
+        lowerJaw();
+        closeJaw();
+        outRoller();
+    }
+    
+    public void highPass()
+    {
+        raiseJaw();
+        closeJaw();
+        outRoller();
+    }
+    
+    public void highThrow()
+    {
+        raiseJaw();
+        openJaw();
+        offRoller();
+    }
+    
 }
