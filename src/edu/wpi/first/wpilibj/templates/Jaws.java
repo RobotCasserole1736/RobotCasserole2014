@@ -10,20 +10,23 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Jaws {
-    Solenoid bottomJawLeftSolenoid, bottomJawRightSolenoid, topJawSolenoid;
+    Solenoid bottomJawLeftSolenoid, bottomJawRightSolenoid, topJawSolenoid, shooterLeftSolenoid, shooterRightSolenoid ;
     Talon rollerTalon;
     Joystick joy;
     //Jaw position - false is default and down position, true is up.
     public boolean jawPos = false;
     //Jaw angle - false is default and closed position, true is open.
     public boolean jawAng = false;
-    
-    public Jaws(int bottomJawLeftSolenoidId, int bottomJawRightSolenoidId, int topJawSolenoidId, int rollerTalonId, Joystick joy)
+    public boolean shoot = false;
+    public Jaws(int bottomJawLeftSolenoidId, int bottomJawRightSolenoidId, int topJawSolenoidId, int rollerTalonId, Joystick joy, int shooterLeftSolenoidId, int shooterRightSolenoidId)
     {
         bottomJawLeftSolenoid = new Solenoid(bottomJawLeftSolenoidId);
         bottomJawRightSolenoid = new Solenoid(bottomJawRightSolenoidId);
         topJawSolenoid = new Solenoid(topJawSolenoidId);
         rollerTalon = new Talon(rollerTalonId);
+        shooterLeftSolenoid = new Solenoid(shooterLeftSolenoidId);
+        shooterRightSolenoid = new Solenoid(shooterRightSolenoidId);
+        
         this.joy = joy;
     }
     
@@ -79,5 +82,48 @@ public class Jaws {
     public void rollerOff()
     {
         rollerTalon.set(0);
+    }
+    public void shoot()
+    {
+        if (shoot)
+            shooterLeftSolenoid.set(true);
+            shooterRightSolenoid.set(true);
+            shoot = false;
+    }
+    public void shooterReset()
+    {
+        if (!shoot)
+            shooterLeftSolenoid.set(false);
+            shooterRightSolenoid.set(false);
+    }
+    public void floorIntake()
+    {
+        lowerJaw();
+        jawAng = false ;
+        rollerTalon.set(1);
+    }
+    public void humanIntake()
+    {
+        raiseJaw();
+        jawAng = true ;
+        rollerTalon.set(0);
+    }
+    public void possession()
+    {
+        raiseJaw();
+        jawAng = false ;
+        rollerTalon.set(0);
+    }
+    public void passFloor()
+    {
+        lowerJaw();
+        jawAng = false ;
+        rollerTalon.set(-1);
+    }
+    public void passHigh()
+    {
+        raiseJaw();
+        jawAng = false ;
+        rollerTalon.set(1);
     }
 }
