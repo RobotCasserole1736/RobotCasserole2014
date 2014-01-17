@@ -65,4 +65,19 @@ public class Jaws {
             jawAng = false;
         }
     }
+    
+    public void intakeRoller()
+    {
+        rollerTalon.set(1);
+    }
+    
+    public void outRoller()
+    {
+        rollerTalon.set(-1);
+    }
+    
+    public void rollerOff()
+    {
+        rollerTalon.set(0);
+    }
 }
