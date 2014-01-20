@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Jaws {
-    Solenoid bottomJawLeftSolenoid, bottomJawRightSolenoid, topJawSolenoid;
+    Solenoid bottomJawLeftSolenoid, bottomJawRightSolenoid, topJawSolenoid, LshooterSolenoid, RshooterSolenoid;
     Talon rollerTalon;
     Joystick joy;
     //Jaw position - false is default and down position, true is up.
@@ -18,8 +18,10 @@ public class Jaws {
     //Jaw angle - false is default and closed position, true is open.
     public boolean jawAng = false;
     
-    public Jaws(int bottomJawLeftSolenoidId, int bottomJawRightSolenoidId, int topJawSolenoidId, int rollerTalonId, Joystick joy)
-    {
+    public Jaws(int bottomJawLeftSolenoidId, int bottomJawRightSolenoidId, int topJawSolenoidId, int rollerTalonId, int RshooterSolenoidId, int LshooterSolenoidId, Joystick joy)
+    {   
+        RshooterSolenoid = new Solenoid(RshooterSolenoidId);
+        LshooterSolenoid = new Solenoid(LshooterSolenoidId);
         bottomJawLeftSolenoid = new Solenoid(bottomJawLeftSolenoidId);
         bottomJawRightSolenoid = new Solenoid(bottomJawRightSolenoidId);
         topJawSolenoid = new Solenoid(topJawSolenoidId);
@@ -76,8 +78,68 @@ public class Jaws {
         rollerTalon.set(-1);
     }
     
-    public void rollerOff()
+    public void offRoller()
     {
         rollerTalon.set(0);
+    }
+    
+    public void shoot()
+    {
+        RshooterSolenoid.set(true);
+        LshooterSolenoid.set(true);
+    }
+    
+    public void shooterReset()
+    {
+        RshooterSolenoid.set(false);
+        LshooterSolenoid.set(false);
+    }
+    
+    public void floorIntake()
+    {
+        lowerJaw();
+        closeJaw();
+        intakeRoller();    
+        shooterReset();
+    }
+    
+    public void humanIntake()
+    {
+        raiseJaw();
+        openJaw();
+        offRoller();      
+        shooterReset();       
+    }
+    
+    public void possession()
+    {
+        raiseJaw();
+        closeJaw();
+        offRoller();
+        shooterReset();
+    }
+    
+    public void floorPass()
+    {
+        lowerJaw();
+        closeJaw();
+        outRoller();
+        shooterReset();
+    }
+    
+    public void highPass()
+    {
+        raiseJaw();
+        closeJaw();
+        outRoller();       
+        shooterReset();
+    }
+    
+    public void robotShoot()
+    {
+        raiseJaw();
+        openJaw();
+        offRoller();
+        shoot();
     }
 }

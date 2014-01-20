@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Encoder;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -23,13 +24,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class MrRoboto extends IterativeRobot {
     // Constants go here - 0's are probably placeholders
     
+    static boolean canAdjustJaw = true;
+    
     // Talon motor IDs
-    public final int FRONT_LEFT_MTRID = 0;
-    public final int FRONT_RIGHT_MTRID = 0;
-    public final int MID_LEFT_MTRID = 0;
-    public final int MID_RIGHT_MTRID = 0;
-    public final int REAR_LEFT_MTRID = 0;
-    public final int REAR_RIGHT_MTRID = 0;
+    public final int FRONT_LEFT_MTRID = 4;
+    public final int FRONT_RIGHT_MTRID = 1;
+    public final int MID_LEFT_MTRID = 5;
+    public final int MID_RIGHT_MTRID = 2;
+    public final int REAR_LEFT_MTRID = 6;
+    public final int REAR_RIGHT_MTRID = 3;
     
     // Transmission object IDs
     public final int XMISSION_SOL1_ID = 0;
@@ -37,6 +40,11 @@ public class MrRoboto extends IterativeRobot {
     public final int COMPRESSOR_RELAY_ID = 0;
     public final int PRESSURE_SW_ID = 0;
     
+    //Jaw ids
+    public final int bottomJawLeftSolenoidId = 0;
+    public final int bottomJawRightSolenoidId = 0;
+    public final int topJawSolenoidId = 0;
+    public final int rollerTalonId = 0;
     
     // Variable/Object declarations go here
     
@@ -48,6 +56,13 @@ public class MrRoboto extends IterativeRobot {
     Talon rearLeftMotor;
     Talon rearRightMotor;
     RobotDrive6Motor driveTrain;
+    
+    //Jaw
+    Jaws jaw;
+    
+    //Encoders
+    Encoder leftEncoder;
+    Encoder rightEncoder;
     
     // Transmission
     Solenoid xmissionSol1, xmissionSol2;
