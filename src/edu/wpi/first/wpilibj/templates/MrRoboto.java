@@ -9,6 +9,7 @@ package edu.wpi.first.wpilibj.templates;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,6 +38,18 @@ public class MrRoboto extends IterativeRobot {
     public final int COMPRESSOR_RELAY_ID = 0;
     public final int PRESSURE_SW_ID = 0;
     
+    // XB360 button IDs
+    public final int SHIFT_UP_BTNID = 0;
+    public final int SHIFT_DOWN_BTNID = 0;
+    
+    // Jaw object IDs
+    public final int BOT_JAW_LEFT_SOL = 0;
+    public final int BOT_JAW_RIGHT_SOL = 0;
+    public final int TOP_JAW_SOL = 0;
+    public final int JAW_TALON = 0;
+    
+    
+    
     
     // Variable/Object declarations go here
     
@@ -52,6 +65,15 @@ public class MrRoboto extends IterativeRobot {
     // Transmission
     Solenoid xmissionSol1, xmissionSol2;
     Compressor xmissionCompressor;
+    
+    // Joystick/XB360 controller
+    Joystick mainJoy;
+    
+    // JAWS
+    Jaws jaws;
+    
+    // booleans
+    public boolean curGear; // first gear (false) or second (true)?
     
     
     // End variable/constant declaration
@@ -77,6 +99,8 @@ public class MrRoboto extends IterativeRobot {
         this.xmissionSol2 = new Solenoid(XMISSION_SOL2_ID);
         this.xmissionCompressor = new Compressor(PRESSURE_SW_ID, COMPRESSOR_RELAY_ID);
         
+        // Construct jaws
+        this.jaws = new Jaws(BOT_JAW_LEFT_SOL, BOT_JAW_RIGHT_SOL, TOP_JAW_SOL, JAW_TALON);
         
     }
 
@@ -91,6 +115,25 @@ public class MrRoboto extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
+        // --- Begin Drive Train Code --- //
+        // Check if a gearshift button was pressed       
+        // if get shift down button and currently in second gear
+        if (mainJoy.getRawButton(SHIFT_DOWN_BTNID) && curGear) {   
+            curGear = false; // change variable accordingly
+            xmissionSol1.set(curGear); // switch gears
+            xmissionSol2.set(curGear);
+        }
+        // if get shift up button and and currently in first gear
+        if (mainJoy.getRawButton(SHIFT_UP_BTNID) && !curGear) {
+            curGear = true; //change var accordingly
+            xmissionSol1.set(curGear);
+            xmissionSol2.set(curGear);
+        }                  
+          
+        // Drive it!
+        driveTrain.arcadeDrive(mainJoy);
+            
+        // --- End drive train code ---
         
     }
     
