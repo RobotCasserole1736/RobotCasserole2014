@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -34,22 +35,12 @@ public class MrRoboto extends IterativeRobot {
     
     // Transmission object IDs
     public final int XMISSION_SOL1_ID = 0;
-    public final int XMISSION_SOL2_ID = 0;
     public final int COMPRESSOR_RELAY_ID = 0;
     public final int PRESSURE_SW_ID = 0;
     
     // XB360 button IDs
     public final int SHIFT_UP_BTNID = 0;
     public final int SHIFT_DOWN_BTNID = 0;
-    
-    // Jaw object IDs
-    public final int BOT_JAW_LEFT_SOL = 0;
-    public final int BOT_JAW_RIGHT_SOL = 0;
-    public final int TOP_JAW_SOL = 0;
-    public final int JAW_TALON = 0;
-    
-    
-    
     
     // Variable/Object declarations go here
     
@@ -63,14 +54,11 @@ public class MrRoboto extends IterativeRobot {
     RobotDrive6Motor driveTrain;
     
     // Transmission
-    Solenoid xmissionSol1, xmissionSol2;
+    Solenoid xmissionSol1;
     Compressor xmissionCompressor;
     
     // Joystick/XB360 controller
     Joystick mainJoy;
-    
-    // JAWS
-    Jaws jaws;
     
     // booleans
     public boolean curGear; // first gear (false) or second (true)?
@@ -96,12 +84,18 @@ public class MrRoboto extends IterativeRobot {
         
         // Construct transmission
         this.xmissionSol1 = new Solenoid(XMISSION_SOL1_ID);
-        this.xmissionSol2 = new Solenoid(XMISSION_SOL2_ID);
         this.xmissionCompressor = new Compressor(PRESSURE_SW_ID, COMPRESSOR_RELAY_ID);
         
-        // Construct jaws
-        this.jaws = new Jaws(BOT_JAW_LEFT_SOL, BOT_JAW_RIGHT_SOL, TOP_JAW_SOL, JAW_TALON);
+        //Add motors and solenoids to LiveWindow
+        LiveWindow.addActuator("Drivetrain", "Front Left Motor", frontLeftMotor);
+        LiveWindow.addActuator("Drivetrain", "Front Right Motor", frontRightMotor);
+        LiveWindow.addActuator("Drivetrain", "Mid Left Motor", midLeftMotor);
+        LiveWindow.addActuator("Drivetrain", "Mid Right Motor", midRightMotor);
+        LiveWindow.addActuator("Drivetrain", "Rear Left Motor", rearLeftMotor);
+        LiveWindow.addActuator("Drivetrain", "Rear Right Motor", rearRightMotor);
+        LiveWindow.addActuator("Drivetrain", "Shifter Solenoid", xmissionSol1);
         
+        mainJoy = new Joystick(1);
     }
 
     /**
@@ -121,13 +115,11 @@ public class MrRoboto extends IterativeRobot {
         if (mainJoy.getRawButton(SHIFT_DOWN_BTNID) && curGear) {   
             curGear = false; // change variable accordingly
             xmissionSol1.set(curGear); // switch gears
-            xmissionSol2.set(curGear);
         }
         // if get shift up button and and currently in first gear
         if (mainJoy.getRawButton(SHIFT_UP_BTNID) && !curGear) {
             curGear = true; //change var accordingly
             xmissionSol1.set(curGear);
-            xmissionSol2.set(curGear);
         }                  
           
         // Drive it!
@@ -141,7 +133,7 @@ public class MrRoboto extends IterativeRobot {
      * This function is called periodically during test mode
      */
     public void testPeriodic() {
-    
+        LiveWindow.run();
     }
     
     public boolean isTargetHot() {
