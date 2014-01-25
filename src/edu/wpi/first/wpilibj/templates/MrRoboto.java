@@ -7,12 +7,16 @@
 
 package edu.wpi.first.wpilibj.templates;
 
+import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -36,15 +40,22 @@ public class MrRoboto extends IterativeRobot {
     
     // Transmission object IDs
     public final int XMISSION_SOL1_ID = 0;
-    public final int XMISSION_SOL2_ID = 0;
     public final int COMPRESSOR_RELAY_ID = 0;
     public final int PRESSURE_SW_ID = 0;
     
     //Jaw ids
     public final int bottomJawLeftSolenoidId = 0;
     public final int bottomJawRightSolenoidId = 0;
+    public final int upperJawSolenoidId = 0;
     public final int topJawSolenoidId = 0;
     public final int rollerTalonId = 0;
+    
+    //Launcher ids
+    public final int launcherSolenoid5Id = 0;
+    public final int launcherSolenoid6Id = 0;
+    
+    //Sensor ids
+    public final int analogchannelId = 0;
     
     // Variable/Object declarations go here
     
@@ -59,14 +70,26 @@ public class MrRoboto extends IterativeRobot {
     
     //Jaw
     Jaws jaw;
+    //upperJaw
+    Solenoid upperJawSol2;
+    //lowerJaw
+    Solenoid lowerJawSol3;
+    Solenoid lowerJawSol4;
+    
+    //Launcher
+    Solenoid launcherSol5;
+    Solenoid launcherSol6;
     
     //Encoders
     Encoder leftEncoder;
     Encoder rightEncoder;
     
     // Transmission
-    Solenoid xmissionSol1, xmissionSol2;
+    Solenoid xmissionSol1;
     Compressor xmissionCompressor;
+    
+    //Pickup
+    Talon pickupMotor;
     
     
     // End variable/constant declaration
@@ -75,6 +98,10 @@ public class MrRoboto extends IterativeRobot {
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
+    
+    DigitalInput dgtl;
+    AnalogChannel anlg;
+    
     public void robotInit() {
         // Construct Talons
         this.frontLeftMotor = new Talon(FRONT_LEFT_MTRID);
@@ -83,14 +110,76 @@ public class MrRoboto extends IterativeRobot {
         this.midRightMotor = new Talon(MID_RIGHT_MTRID);
         this.rearLeftMotor = new Talon(REAR_LEFT_MTRID);
         this.rearRightMotor = new Talon(REAR_RIGHT_MTRID);
+        this.pickupMotor = new Talon(rollerTalonId);
         
         // Construct RobotDrive
         this.driveTrain = new RobotDrive6Motor(frontLeftMotor, midLeftMotor, rearLeftMotor, frontRightMotor, midRightMotor, rearRightMotor);
         
         // Construct transmission
         this.xmissionSol1 = new Solenoid(XMISSION_SOL1_ID);
-        this.xmissionSol2 = new Solenoid(XMISSION_SOL2_ID);
         this.xmissionCompressor = new Compressor(PRESSURE_SW_ID, COMPRESSOR_RELAY_ID);
+        
+        // Construct Jaw/Launcher Solenoids
+        this.upperJawSol2 = new Solenoid(upperJawSolenoidId);
+        this.lowerJawSol3 = new Solenoid(bottomJawRightSolenoidId);
+        this.lowerJawSol4 = new Solenoid(bottomJawLeftSolenoidId);
+        this.launcherSol5 = new Solenoid(launcherSolenoid5Id);
+        this.launcherSol6 = new Solenoid(launcherSolenoid6Id);
+        
+        // Construct Analog Sensor
+        this.anlg = new AnalogChannel(analogchannelId);
+        
+        //drivetrain
+        frontRightMotor = new Talon(1);
+        LiveWindow.addActuator("Right1", "FrontRightMotor", frontRightMotor);
+        midRightMotor = new Talon(2);
+        LiveWindow.addActuator("Right2", "MidRightMotor", midRightMotor);
+        rearRightMotor = new Talon(3);
+        LiveWindow.addActuator("Right3", "RearRightMotor", rearRightMotor);
+        frontLeftMotor = new Talon(4);
+        LiveWindow.addActuator("Left1", "FrontLeftMotor", frontLeftMotor);
+        midLeftMotor = new Talon(5);
+        LiveWindow.addActuator("Left2", "MidLeftMotor", midLeftMotor);
+        rearLeftMotor = new Talon(6);
+        LiveWindow.addActuator("Left3", "RearLeftMotor", rearLeftMotor);
+        xmissionSol1 = new Solenoid(1);
+        LiveWindow.addActuator("Shifter", "XmissionSol1", xmissionSol1);
+        rightEncoder = new Encoder(1,2);
+        LiveWindow.addSensor("Right", "RightEncoder", rightEncoder);
+        leftEncoder = new Encoder(3,4);
+        LiveWindow.addSensor("Left", "LeftEncoder", leftEncoder);
+        anlg = new AnalogChannel(1,2);
+        LiveWindow.addSensor("Distance", "Anlg", anlg);
+        
+        //upperjaw
+        upperJawSol2 = new Solenoid(2);
+        LiveWindow.addActuator("Open/Close", "UpperJawSol2", upperJawSol2);
+        
+        //pickup
+        pickupMotor = new Talon(7);
+        LiveWindow.addActuator("Roller", "PickupMotor", pickupMotor);
+        
+        //lowerjaw
+        lowerJawSol3 = new Solenoid(3);
+        LiveWindow.addActuator("Up/DownRight", "LowerJawSol3", lowerJawSol3);
+        lowerJawSol4 = new Solenoid(4);
+        LiveWindow.addActuator("Up/DownLeft", "LowerJawSol4", lowerJawSol4);
+        
+        //launcher
+        launcherSol5 = new Solenoid(5);
+        LiveWindow.addActuator("ShooterRight", "LauncherSol5", launcherSol5);
+        launcherSol6 = new Solenoid(6);
+        LiveWindow.addActuator("WhooterLeft", "LauncherSol6", launcherSol6);
+        
+        //PneumaticSystem
+        xmissionCompressor = new Compressor(14,8);
+        LiveWindow.addActuator("Test", "XmissionCompressor", xmissionCompressor);
+        dgtl = new DigitalInput(14);
+        LiveWindow.addActuator("PressureSwitch", "Dgtl", dgtl);
+        
+        
+       
+        
         
         
     }
