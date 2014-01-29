@@ -56,6 +56,7 @@ public class MrRoboto extends IterativeRobot {
     
     //Sensor ids
     public final int analogchannelId = 0;
+    public final int analogchannel2Id = 0;
     
     // Variable/Object declarations go here
     
@@ -88,6 +89,7 @@ public class MrRoboto extends IterativeRobot {
     Solenoid xmissionSol1;
     Compressor xmissionCompressor;
     
+    
     //Pickup
     Talon pickupMotor;
     
@@ -101,6 +103,7 @@ public class MrRoboto extends IterativeRobot {
     
     DigitalInput dgtl;
     AnalogChannel anlg;
+    AnalogChannel anlg2;
     
     public void robotInit() {
         // Construct Talons
@@ -128,6 +131,7 @@ public class MrRoboto extends IterativeRobot {
         
         // Construct Analog Sensor
         this.anlg = new AnalogChannel(analogchannelId);
+        this.anlg2 = new AnalogChannel(analogchannel2Id);
         
         //drivetrain
         frontRightMotor = new Talon(1);
@@ -176,6 +180,8 @@ public class MrRoboto extends IterativeRobot {
         LiveWindow.addActuator("Test", "XmissionCompressor", xmissionCompressor);
         dgtl = new DigitalInput(14);
         LiveWindow.addActuator("PressureSwitch", "Dgtl", dgtl);
+        anlg2 = new AnalogChannel(3,4);
+        LiveWindow.addSensor("PressureSensor", "Anlg2", anlg2);
         
         
        
