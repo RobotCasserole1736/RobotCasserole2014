@@ -13,6 +13,12 @@ public class Jaws {
     Solenoid bottomJawLeftSolenoid, bottomJawRightSolenoid, topJawSolenoid, LshooterSolenoid, RshooterSolenoid;
     Talon rollerTalon;
     Joystick joy;
+    int lastState = 0;
+    int currentState = 0;
+    
+    //Array of time in seconds that it takes to complete each state
+    double[] stateTimers = {0, 0, 0, 0, 0, 3, 3.5, 5, 3};
+    double timeInState = 0;
     //Jaw position - false is default and down position, true is up.
     public boolean jawPos = false;
     //Jaw angle - false is default and closed position, true is open.
@@ -29,6 +35,18 @@ public class Jaws {
         this.joy = joy;
     }
     
+    static class State{
+        static int defense = 0;
+        static int floorIntake = 1;
+        static int humanIntake = 2;
+        static int lowPossession = 3;
+        static int highPossession = 4;
+        static int floorPass = 5;
+        static int highPass = 6;
+        static int shoot = 7;
+        static int shooterReset = 8;
+    }
+    
     public void lowerJaw()
     {
         if(jawPos)
@@ -37,6 +55,10 @@ public class Jaws {
             bottomJawRightSolenoid.set(false);
             jawPos = false;
         }
+    }
+    
+    public void update(){
+        
     }
     
     public void raiseJaw()
