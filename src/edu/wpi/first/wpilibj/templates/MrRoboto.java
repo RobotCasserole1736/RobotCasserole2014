@@ -39,24 +39,23 @@ public class MrRoboto extends IterativeRobot {
     public final int REAR_RIGHT_MTRID = 3;
     
     // Transmission object IDs
-    public final int XMISSION_SOL1_ID = 0;
-    public final int COMPRESSOR_RELAY_ID = 0;
-    public final int PRESSURE_SW_ID = 0;
+    public final int XMISSION_SOL1_ID = 1;
+    public final int COMPRESSOR_RELAY_ID = 8;
+    public final int PRESSURE_SW_ID = 14;
     
     //Jaw ids
-    public final int bottomJawLeftSolenoidId = 0;
-    public final int bottomJawRightSolenoidId = 0;
-    public final int upperJawSolenoidId = 0;
-    public final int topJawSolenoidId = 0;
-    public final int rollerTalonId = 0;
+    public final int bottomJawLeftSolenoidId = 3;
+    public final int bottomJawRightSolenoidId = 4;
+    public final int upperJawSolenoidId = 2;
+    public final int rollerTalonId = 7;
     
     //Launcher ids
-    public final int launcherSolenoid5Id = 0;
-    public final int launcherSolenoid6Id = 0;
+    public final int launcherSolenoid5Id = 5;
+    public final int launcherSolenoid6Id = 6;
     
     //Sensor ids
-    public final int analogchannelId = 0;
-    public final int analogchannel2Id = 0;
+    public final int analogchannelId = 1;
+    public final int analogchannel2Id = 2;
     
     // Variable/Object declarations go here
     
@@ -135,54 +134,35 @@ public class MrRoboto extends IterativeRobot {
         this.anlg2 = new AnalogChannel(analogchannel2Id);
         
         //drivetrain
-        frontRightMotor = new Talon(1);
-        LiveWindow.addActuator("Right1", "FrontRightMotor", frontRightMotor);
-        midRightMotor = new Talon(2);
-        LiveWindow.addActuator("Right2", "MidRightMotor", midRightMotor);
-        rearRightMotor = new Talon(3);
-        LiveWindow.addActuator("Right3", "RearRightMotor", rearRightMotor);
-        frontLeftMotor = new Talon(4);
-        LiveWindow.addActuator("Left1", "FrontLeftMotor", frontLeftMotor);
-        midLeftMotor = new Talon(5);
-        LiveWindow.addActuator("Left2", "MidLeftMotor", midLeftMotor);
-        rearLeftMotor = new Talon(6);
-        LiveWindow.addActuator("Left3", "RearLeftMotor", rearLeftMotor);
-        xmissionSol1 = new Solenoid(1);
-        LiveWindow.addActuator("Shifter", "XmissionSol1", xmissionSol1);
+        LiveWindow.addActuator("Drivetrain", "FrontRightMotor", frontRightMotor);
+        LiveWindow.addActuator("Drivetrain", "MidRightMotor", midRightMotor);
+        LiveWindow.addActuator("Drivetrain", "RearRightMotor", rearRightMotor);
+        LiveWindow.addActuator("Drivetrain", "FrontLeftMotor", frontLeftMotor);
+        LiveWindow.addActuator("Drivetrain", "MidLeftMotor", midLeftMotor);
+        LiveWindow.addActuator("Drivetrain", "RearLeftMotor", rearLeftMotor);
+        LiveWindow.addActuator("Drivetrain", "ShifterSolenoid", xmissionSol1);
         rightEncoder = new Encoder(1,2);
-        LiveWindow.addSensor("Right", "RightEncoder", rightEncoder);
+        LiveWindow.addSensor("Drivetrain", "RightEncoder", rightEncoder);
         leftEncoder = new Encoder(3,4);
-        LiveWindow.addSensor("Left", "LeftEncoder", leftEncoder);
-        anlg = new AnalogChannel(1,2);
+        LiveWindow.addSensor("Drivetrain", "LeftEncoder", leftEncoder);
         LiveWindow.addSensor("Distance", "Anlg", anlg);
         
         //upperjaw
-        upperJawSol2 = new Solenoid(2);
-        LiveWindow.addActuator("Open/Close", "UpperJawSol2", upperJawSol2);
+        LiveWindow.addActuator("Jaws", "UpperJawSol2", upperJawSol2);
         
         //pickup
-        pickupMotor = new Talon(7);
-        LiveWindow.addActuator("Roller", "PickupMotor", pickupMotor);
+        LiveWindow.addActuator("Jaws", "PickupMotor", pickupMotor);
         
         //lowerjaw
-        lowerJawSol3 = new Solenoid(3);
-        LiveWindow.addActuator("Up/DownRight", "LowerJawSol3", lowerJawSol3);
-        lowerJawSol4 = new Solenoid(4);
-        LiveWindow.addActuator("Up/DownLeft", "LowerJawSol4", lowerJawSol4);
+        LiveWindow.addActuator("Jaws", "LowerJawSol3", lowerJawSol3);
+        LiveWindow.addActuator("Jaws", "LowerJawSol4", lowerJawSol4);
         
         //launcher
-        launcherSol5 = new Solenoid(5);
-        LiveWindow.addActuator("ShooterRight", "LauncherSol5", launcherSol5);
-        launcherSol6 = new Solenoid(6);
-        LiveWindow.addActuator("WhooterLeft", "LauncherSol6", launcherSol6);
+        LiveWindow.addActuator("Jaws", "LauncherSol5", launcherSol5);
+        LiveWindow.addActuator("Jaws", "LauncherSol6", launcherSol6);
         
         //PneumaticSystem
-        xmissionCompressor = new Compressor(14,8);
-        LiveWindow.addActuator("Test", "XmissionCompressor", xmissionCompressor);
-        dgtl = new DigitalInput(14);
-        LiveWindow.addActuator("PressureSwitch", "Dgtl", dgtl);
-        anlg2 = new AnalogChannel(3,4);
-        LiveWindow.addSensor("PressureSensor", "Anlg2", anlg2);
+        LiveWindow.addSensor("Pneumatics", "Pressure Sensor", anlg2);
         
         
        
