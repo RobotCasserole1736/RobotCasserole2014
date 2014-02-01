@@ -121,6 +121,7 @@ public class MrRoboto extends IterativeRobot {
         // Construct transmission
         this.xmissionSol1 = new Solenoid(XMISSION_SOL1_ID);
         this.xmissionCompressor = new Compressor(PRESSURE_SW_ID, COMPRESSOR_RELAY_ID);
+        this.xmissionCompressor.start();
         
         // Construct Jaw/Launcher Solenoids
         this.upperJawSol2 = new Solenoid(upperJawSolenoidId);
@@ -208,7 +209,7 @@ public class MrRoboto extends IterativeRobot {
      * This function is called periodically during test mode
      */
     public void testPeriodic() {
-    
+        LiveWindow.run();
     }
     
     public boolean isTargetHot() {
