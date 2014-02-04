@@ -11,6 +11,7 @@ package edu.wpi.first.wpilibj.templates;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -40,7 +41,7 @@ public class MrRoboto extends IterativeRobot {
     Talon leftRearMotor = new Talon(LEFTREARMOTORCHANNEL);
     Talon rightRearMotor = new Talon(RIGHTREARMOTORCHANNEL);
     
-    
+    Jaws jaw;
     private boolean shiftWasPressed; //*Stores prior pressed button value
     
     
@@ -61,7 +62,46 @@ public class MrRoboto extends IterativeRobot {
      * This function is called periodically during autonomous
      */
     public void autonomousPeriodic() {
-
+        driveThenShoot();
+    }
+    
+    public void driveThenShoot() {
+        int startTime = 0;
+        if(startTime == -1) {
+            startTime = (int) Timer.getFPGATimestamp();
+        }
+        int delay = 0;
+        int secondDelay = 0;
+        if(startTime + delay < Timer.getFPGATimestamp()) {
+            driveTrain.drive(1, 0);
+        }
+        else if(startTime + delay > Timer.getFPGATimestamp() && startTime + secondDelay < Timer.getFPGATimestamp())
+        {
+            driveTrain.drive(0, 0);
+            jaw.shooterReset();
+        }
+        else
+        {
+            jaw.shooterReset();
+        }
+    }
+    
+    public void shootThenDrive() {
+        int startTime = 0;
+        if(startTime == -1) {
+            startTime = (int) Timer.getFPGATimestamp();
+            jaw.shooterFire();
+        }
+        int delay = 0;
+        if(startTime + delay < Timer.getFPGATimestamp())
+        {
+            jaw.shooterReset();
+            driveTrain.drive(1, 0);
+        }
+        else
+        {
+            driveTrain.drive(0, 0);
+        }
     }
 
     /**
