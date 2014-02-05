@@ -402,11 +402,13 @@ public class RobotDrive6Motor implements IUtility {
         if (m_frontLeftMotor != null) {
             m_frontLeftMotor.set(limit(leftOutput) * m_invertedMotors[MotorType.kFrontLeft_val] * m_maxOutput, syncGroup);
         }
+        m_midLeftMotor.set(limit(leftOutput) * m_invertedMotors[MotorType.kMidLeft_val] * m_maxOutput, syncGroup);
         m_rearLeftMotor.set(limit(leftOutput) * m_invertedMotors[MotorType.kRearLeft_val] * m_maxOutput, syncGroup);
 
         if (m_frontRightMotor != null) {
             m_frontRightMotor.set(-limit(rightOutput) * m_invertedMotors[MotorType.kFrontRight_val] * m_maxOutput, syncGroup);
         }
+        m_midRightMotor.set(-limit(rightOutput) * m_invertedMotors[MotorType.kMidRight_val] * m_maxOutput, syncGroup);
         m_rearRightMotor.set(-limit(rightOutput) * m_invertedMotors[MotorType.kRearRight_val] * m_maxOutput, syncGroup);
     }
 

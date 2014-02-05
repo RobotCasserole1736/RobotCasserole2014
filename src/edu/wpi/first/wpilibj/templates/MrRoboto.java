@@ -104,6 +104,8 @@ public class MrRoboto extends IterativeRobot {
     AnalogChannel anlg;
     AnalogChannel anlg2;
     
+    Joystick mainJoy;
+    
     public void robotInit() {
         // Construct Talons
         this.frontLeftMotor = new Talon(FRONT_LEFT_MTRID);
@@ -164,7 +166,7 @@ public class MrRoboto extends IterativeRobot {
         //PneumaticSystem
         LiveWindow.addSensor("Pneumatics", "Pressure Sensor", anlg2);
         
-        
+        mainJoy = new Joystick(1);
        
         
         
@@ -182,7 +184,11 @@ public class MrRoboto extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-        
+        if(mainJoy.getRawButton(5))
+            xmissionSol1.set(true);
+        else if(mainJoy.getRawButton(6))
+            xmissionSol1.set(false);
+        driveTrain.arcadeDrive(mainJoy);
     }
     
     /**
