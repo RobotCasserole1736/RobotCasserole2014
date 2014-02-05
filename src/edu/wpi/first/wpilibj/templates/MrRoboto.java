@@ -9,9 +9,11 @@ package edu.wpi.first.wpilibj.templates;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -24,18 +26,17 @@ public class MrRoboto extends IterativeRobot {
     // Constants go here - 0's are probably placeholders
     
     // Talon motor IDs
-    public final int FRONT_LEFT_MTRID = 0;
-    public final int FRONT_RIGHT_MTRID = 0;
-    public final int MID_LEFT_MTRID = 0;
-    public final int MID_RIGHT_MTRID = 0;
-    public final int REAR_LEFT_MTRID = 0;
-    public final int REAR_RIGHT_MTRID = 0;
+    public final int FRONT_LEFT_MTRID = 4;
+    public final int FRONT_RIGHT_MTRID = 1;
+    public final int MID_LEFT_MTRID = 5;
+    public final int MID_RIGHT_MTRID = 2;
+    public final int REAR_LEFT_MTRID = 6;
+    public final int REAR_RIGHT_MTRID = 3;
     
     // Transmission object IDs
-    public final int XMISSION_SOL1_ID = 0;
-    public final int XMISSION_SOL2_ID = 0;
-    public final int COMPRESSOR_RELAY_ID = 0;
-    public final int PRESSURE_SW_ID = 0;
+    public final int XMISSION_SOL1_ID = 1;
+    public final int COMPRESSOR_RELAY_ID = 8;
+    public final int PRESSURE_SW_ID = 14;
     
     
     // Variable/Object declarations go here
@@ -52,7 +53,8 @@ public class MrRoboto extends IterativeRobot {
     // Transmission
     Solenoid xmissionSol1, xmissionSol2;
     Compressor xmissionCompressor;
-    
+    Joystick mainJoy, shooterJoy;
+    Jaws jaws;
     
     // End variable/constant declaration
     
@@ -74,9 +76,14 @@ public class MrRoboto extends IterativeRobot {
         
         // Construct transmission
         this.xmissionSol1 = new Solenoid(XMISSION_SOL1_ID);
-        this.xmissionSol2 = new Solenoid(XMISSION_SOL2_ID);
         this.xmissionCompressor = new Compressor(PRESSURE_SW_ID, COMPRESSOR_RELAY_ID);
-        
+        this.xmissionCompressor.start(); 
+        //Joystick
+        this.mainJoy = new Joystick(1);
+        this.shooterJoy = new Joystick(2);
+    
+        //Jaws
+        this.jaws = new Jaws(3,4,2,7,6,5,shooterJoy);
         
     }
 
@@ -91,9 +98,16 @@ public class MrRoboto extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-        
+        jaws.update();
+        driveTrain.arcadeDrive(mainJoy);
+        if (mainJoy.getRawButton(5)){
+            xmissionSol1.set(true);
+        }
+        if (mainJoy.getRawButton(6))
+        {
+            xmissionSol1.set(false);
+        }
     }
-    
     /**
      * This function is called periodically during test mode
      */
@@ -104,5 +118,5 @@ public class MrRoboto extends IterativeRobot {
     public boolean isTargetHot() {
         return SmartDashboard.getBoolean("HotTargetFound", false);
     }
-    
+   
 }
