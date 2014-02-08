@@ -378,7 +378,7 @@ public class RobotDrive6Motor implements IUtility {
     /**
      * Arcade drive implements single stick driving.
      * This function lets you directly provide joystick values from any source.
-     * @param moveValue The value to use for fowards/backwards
+     * @param moveValue The value to use for forwards/backwards
      * @param rotateValue The value to use for the rotate right/left
      */
     public void arcadeDrive(double moveValue, double rotateValue) {

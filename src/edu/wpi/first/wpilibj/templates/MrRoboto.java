@@ -164,7 +164,7 @@ public class MrRoboto extends IterativeRobot {
      */
     public void teleopPeriodic() 
     {
-        driveTrain.arcadeDrive(mainJoy);
+        driveTrain.arcadeDrive(mainJoy.getRawAxis(2), mainJoy.getRawAxis(4));
         jaw.update();
     }
     
