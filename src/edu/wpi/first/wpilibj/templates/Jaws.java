@@ -66,6 +66,18 @@ public class Jaws {
     
     public void update()
     {
+        if(shooterJoy.getRawAxis(3) < -0.5)
+        {
+            intakeRoller();
+        }
+        else if(shooterJoy.getRawAxis(3) > 0.5)
+        {
+            outRoller();
+        }
+        else
+        {
+            rollerTalon.set(0);
+        }
         double currentTime = Timer.getFPGATimestamp();
         timeInState += currentTime - lastTime;
         lastTime = currentTime;
@@ -109,10 +121,6 @@ public class Jaws {
                 {
                     desiredState = State.trussPass;
                 }
-                else if(shooterJoy.getRawButton(5) && currentState != State.highPossession)
-                {
-                    desiredState = State.trussPass;
-                }
                 else if(shooterJoy.getRawButton(5) && currentState == State.highPossession)
                 {
                     desiredState = State.trussPrep;
@@ -129,14 +137,6 @@ public class Jaws {
             else if(shooterJoy.getRawButton(9) && shooterJoy.getRawButton(10))
             {
                 desiredState = State.defense;
-            }
-            else if(shooterJoy.getRawAxis(3) > 0)
-            {
-                outRoller();
-            }
-            else if(shooterJoy.getRawAxis(3) < 0)
-            {
-                intakeRoller();
             }
         }
         if(timeInState >= stateTimers[currentState])
