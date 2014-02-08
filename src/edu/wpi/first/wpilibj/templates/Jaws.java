@@ -21,7 +21,7 @@ public class Jaws {
     Joystick shooterJoy;
     
     //Array of time in seconds that it takes to complete each state
-    double[] stateTimers = {0, 0, 0, 0, 0, 3, 3.5, 5, 3};
+    double[] stateTimers = {0, 0, 0, 0, 0, 3, 3.5, 5, 3, 2};
     double timeInState = 0;
     double lastTime = 0;
     
@@ -46,11 +46,12 @@ public class Jaws {
         static int humanIntake = 2;
         static int lowPossession = 3;
         static int highPossession = 4;
-        static int floorPass = 5;
-        static int highPass = 6;
-        static int trussPass = 7;
-        static int shoot = 8;
-        static int shooterReset = 9;
+        static int highPass = 5;
+        static int trussPass = 6;
+        static int shoot = 7;
+        static int shooterReset = 8;
+        static int shotPrep = 9;
+        static int trussPrep = 10;
     }
     
     public void lowerJaw()
@@ -74,16 +75,6 @@ public class Jaws {
             desiredState = State.shooterReset;
             needStateTransition = true;
         }
-        else if(currentState == State.highPass) 
-        {
-            desiredState = State.defense;
-            needStateTransition = true;
-        }
-        else if(currentState == State.floorPass) 
-        {
-            desiredState = State.floorIntake;
-            needStateTransition = true;
-        } 
         else if(currentState == State.trussPass)
         {
             desiredState = State.shooterReset;
@@ -96,15 +87,11 @@ public class Jaws {
         if(!needStateTransition) 
         {
             //Set state from controller
-            if(shooterJoy.getRawButton(1)) 
-            {
-                desiredState = State.floorPass;
-            }
-            else if(shooterJoy.getRawButton(4))
+            if(shooterJoy.getRawButton(2))
             {
                 desiredState = State.highPass;
             }
-            else if(shooterJoy.getRawButton(2))
+            else if(shooterJoy.getRawButton(1))
             {
                 desiredState = State.floorIntake;
             }
@@ -112,17 +99,44 @@ public class Jaws {
             {
                 desiredState = State.humanIntake;
             }
-            else if(shooterJoy.getRawButton(5))
+            else if(shooterJoy.getRawButton(4))
             {
-                desiredState = State.trussPass;
+                desiredState = State.highPossession;
             }
-            else if(shooterJoy.getRawButton(6))
+            else if(!jawAng)
             {
-                desiredState = State.shoot;
+                if(shooterJoy.getRawButton(5) && currentState != State.highPossession)
+                {
+                    desiredState = State.trussPass;
+                }
+                else if(shooterJoy.getRawButton(5) && currentState != State.highPossession)
+                {
+                    desiredState = State.trussPass;
+                }
+                else if(shooterJoy.getRawButton(5) && currentState == State.highPossession)
+                {
+                    desiredState = State.trussPrep;
+                }
+                else if(shooterJoy.getRawButton(6) && currentState != State.highPossession)
+                {   
+                    desiredState = State.shoot;
+                }
+                else if(shooterJoy.getRawButton(6) && currentState == State.highPossession)
+                {   
+                    desiredState = State.shotPrep;
+                }
             }
             else if(shooterJoy.getRawButton(9) && shooterJoy.getRawButton(10))
             {
                 desiredState = State.defense;
+            }
+            else if(shooterJoy.getRawAxis(3) > 0)
+            {
+                outRoller();
+            }
+            else if(shooterJoy.getRawAxis(3) < 0)
+            {
+                intakeRoller();
             }
         }
         if(timeInState >= stateTimers[currentState])
@@ -130,19 +144,13 @@ public class Jaws {
             if(desiredState == State.defense || desiredState == State.highPossession)
             {
                 highPossession();
-                currentState = State.defense;
+                currentState = State.highPossession;
                 timeInState = 0;
             }
             else if(desiredState == State.floorIntake)
             {
                 floorIntake();
                 currentState = State.floorIntake;
-                timeInState = 0;
-            }
-            else if(desiredState == State.floorPass)
-            {
-                floorPass();
-                currentState = State.floorPass;
                 timeInState = 0;
             }
             else if(desiredState == State.highPass)
@@ -154,7 +162,7 @@ public class Jaws {
             else if(desiredState == State.humanIntake)
             {
                 humanIntake();
-                currentState = State.highPossession;
+                currentState = State.humanIntake;
                 timeInState = 0;
             }
             else if(desiredState == State.lowPossession)
@@ -165,7 +173,7 @@ public class Jaws {
             }
             else if(desiredState == State.shoot)
             {
-                robotShoot();
+                shoot();
                 currentState = State.shoot;
                 timeInState = 0;
             }
@@ -174,6 +182,20 @@ public class Jaws {
                 shooterReset();
                 currentState = State.shooterReset;
                 timeInState = 0;
+            }
+            else if(desiredState == State.trussPrep)
+            {
+                openJaw();
+                currentState = State.trussPrep;
+                timeInState = 0;
+                desiredState = State.trussPass;
+            }
+            else if(desiredState == State.shotPrep)
+            {
+                openJaw();
+                currentState = State.shotPrep;
+                timeInState = 0;
+                desiredState = State.shoot;
             }
         }
     }
@@ -237,15 +259,13 @@ public class Jaws {
     public void floorIntake()
     {
         lowerJaw();
-        closeJaw();
-        intakeRoller();    
+        closeJaw();   
     }
     
     public void humanIntake()
     {
         raiseJaw();
-        openJaw();
-        offRoller();             
+        openJaw();             
     }
     
     public void highPossession()
@@ -262,25 +282,9 @@ public class Jaws {
         offRoller();
     }
     
-    public void floorPass()
-    {
-        lowerJaw();
-        closeJaw();
-        outRoller();
-    }
-    
     public void highPass()
     {
         raiseJaw();
-        closeJaw();
-        outRoller();     
-    }
-    
-    public void robotShoot()
-    {
-        raiseJaw();
-        openJaw();
-        offRoller();
-        shoot();
+        openJaw();     
     }
 }
