@@ -110,6 +110,11 @@ public class MrRoboto extends IterativeRobot {
         
         xmissionCompressor.start();
     }
+    public void disabledInit(){
+        jaw.raiseJaw();
+        jaw.closeJaw();
+        jaw.shooterReset();
+    }
 
     /**
      * This function is called periodically during autonomous
@@ -128,7 +133,8 @@ public class MrRoboto extends IterativeRobot {
         else if(startTime + delay > Timer.getFPGATimestamp() && startTime + secondDelay < Timer.getFPGATimestamp())
         {
             driveTrain.drive(0, 0);
-            jaw.robotShoot();
+            jaw.openJaw();
+            jaw.shoot();
         }
         else
         {
@@ -139,7 +145,8 @@ public class MrRoboto extends IterativeRobot {
     public void autoShootThenDrive() {
         if(startTime == -1) {
             startTime = Timer.getFPGATimestamp();
-            jaw.robotShoot();
+            jaw.openJaw();
+            jaw.shoot();
         }
         if(startTime + delay < Timer.getFPGATimestamp())
         {
