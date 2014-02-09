@@ -37,16 +37,17 @@ public class MrRoboto extends IterativeRobot {
     public final int REAR_RIGHT_MTRID = 3;
     
     // Transmission object IDs
-    public final int XMISSION_SOL1_ID = 0;
-    public final int XMISSION_SOL2_ID = 0;
-    public final int COMPRESSOR_RELAY_ID = 0;
-    public final int PRESSURE_SW_ID = 0;
+    public final int XMISSION_SOL1_ID = 1;
+    public final int COMPRESSOR_RELAY_ID = 8;
+    public final int PRESSURE_SW_ID = 14;
     
     //Jaw ids
-    public final int bottomJawLeftSolenoidId = 0;
-    public final int bottomJawRightSolenoidId = 0;
-    public final int topJawSolenoidId = 0;
-    public final int rollerTalonId = 0;
+    public final int bottomJawLeftSolenoidId = 3;
+    public final int bottomJawRightSolenoidId = 4;
+    public final int topJawSolenoidId = 2;
+    public final int rollerTalonId = 7;
+    public final int RshooterSolenoidId = 5;
+    public final int LshooterSolenoidId = 6;
     
     //Autonomous values
     public static double startTime = -1;
@@ -106,9 +107,11 @@ public class MrRoboto extends IterativeRobot {
         mainJoy = new Joystick(1);
         shooterJoy = new Joystick(2);
         
-        jaw = new Jaws(bottomJawLeftSolenoidId, bottomJawRightSolenoidId, topJawSolenoidId, rollerTalonId, topJawSolenoidId, topJawSolenoidId, shooterJoy);
+        jaw = new Jaws(bottomJawLeftSolenoidId, bottomJawRightSolenoidId, topJawSolenoidId, rollerTalonId, RshooterSolenoidId, LshooterSolenoidId, shooterJoy);
         
         xmissionCompressor.start();
+        xmissionSol1.set(true);  //set to high gear by default
+        
     }
     public void disabledInit(){
         jaw.raiseJaw();
@@ -166,6 +169,14 @@ public class MrRoboto extends IterativeRobot {
     {
         driveTrain.arcadeDrive(mainJoy.getRawAxis(2), mainJoy.getRawAxis(4));
         jaw.update();
+        if(mainJoy.getRawButton(5))
+        {
+            xmissionSol1.set(true);
+        }
+        else if(mainJoy.getRawButton(6))
+        {
+            xmissionSol1.set(false);
+        }
     }
     
     /**

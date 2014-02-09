@@ -21,12 +21,12 @@ public class Jaws {
     Joystick shooterJoy;
     
     //Array of time in seconds that it takes to complete each state
-    double[] stateTimers = {0, 0, 0, 0, 0, 3, 3.5, 5, 3, 2};
+    double[] stateTimers = {0, 0, 0, 0, 0, 0, 0.25, 1, 1, 1, 1};
     double timeInState = 0;
     double lastTime = 0;
     
-    //Jaw position - false is default and down position, true is up.
-    public boolean jawPos = false;
+    //Jaw position - true is default and up position, false is down.
+    public boolean jawPos = true;
     //Jaw angle - false is default and closed position, true is open.
     public boolean jawAng = false;
     
@@ -38,6 +38,7 @@ public class Jaws {
         bottomJawRightSolenoid = new Solenoid(bottomJawRightSolenoidId);
         topJawSolenoid = new Solenoid(topJawSolenoidId);
         rollerTalon = new Talon(rollerTalonId);
+        this.shooterJoy = shooterJoy;
     }
     
     static class State{
@@ -52,16 +53,6 @@ public class Jaws {
         static int shooterReset = 8;
         static int shotPrep = 9;
         static int trussPrep = 10;
-    }
-    
-    public void lowerJaw()
-    {
-        if(jawPos)
-        {
-            bottomJawLeftSolenoid.set(false);
-            bottomJawRightSolenoid.set(false);
-            jawPos = false;
-        }
     }
     
     public void update()
@@ -94,45 +85,45 @@ public class Jaws {
         }
         else
         {
-            desiredState = currentState;
+            if(desiredState != State.shoot && desiredState != State.trussPass)
+            {
+                desiredState = currentState;
+            }
+            else
+            {
+                needStateTransition = true;
+            }
         }
         if(!needStateTransition) 
         {
             //Set state from controller
             if(shooterJoy.getRawButton(2))
             {
-                desiredState = State.highPass;
+                desiredState = State.highPossession;
             }
             else if(shooterJoy.getRawButton(1))
             {
                 desiredState = State.floorIntake;
             }
-            else if(shooterJoy.getRawButton(3))
+            else if(shooterJoy.getRawButton(4))
             {
                 desiredState = State.humanIntake;
             }
-            else if(shooterJoy.getRawButton(4))
+            if(shooterJoy.getRawButton(5) && currentState != State.highPossession && currentState != State.defense)
             {
-                desiredState = State.highPossession;
+                desiredState = State.trussPass;
             }
-            else if(!jawAng)
+            else if(shooterJoy.getRawButton(5) && currentState == State.highPossession)
             {
-                if(shooterJoy.getRawButton(5) && currentState != State.highPossession)
-                {
-                    desiredState = State.trussPass;
-                }
-                else if(shooterJoy.getRawButton(5) && currentState == State.highPossession)
-                {
-                    desiredState = State.trussPrep;
-                }
-                else if(shooterJoy.getRawButton(6) && currentState != State.highPossession)
-                {   
-                    desiredState = State.shoot;
-                }
-                else if(shooterJoy.getRawButton(6) && currentState == State.highPossession)
-                {   
-                    desiredState = State.shotPrep;
-                }
+                desiredState = State.trussPrep;
+            }
+            else if(shooterJoy.getRawButton(6) && currentState != State.highPossession && currentState != State.defense)
+            {   
+                desiredState = State.shoot;
+            }
+            else if(shooterJoy.getRawButton(6) && currentState == State.highPossession)
+            {   
+                desiredState = State.shotPrep;
             }
             else if(shooterJoy.getRawButton(9) && shooterJoy.getRawButton(10))
             {
@@ -143,58 +134,104 @@ public class Jaws {
         {
             if(desiredState == State.defense || desiredState == State.highPossession)
             {
+                //System.out.println("High Possession Called");
                 highPossession();
-                currentState = State.highPossession;
-                timeInState = 0;
+                if(currentState != State.highPossession)
+                {
+                    currentState = State.highPossession;
+                    timeInState = 0;
+                }
             }
             else if(desiredState == State.floorIntake)
             {
+                //System.out.println("Floor intake called");
                 floorIntake();
-                currentState = State.floorIntake;
-                timeInState = 0;
+                if(currentState != State.floorIntake)
+                {
+                    currentState = State.floorIntake;
+                    timeInState = 0;
+                }
             }
             else if(desiredState == State.highPass)
             {
+                //System.out.println("High Pass Called");
                 highPass();
-                currentState = State.highPass;
-                timeInState = 0;
+                if(currentState != State.highPass)
+                {
+                    currentState = State.highPass;
+                    timeInState = 0;
+                }
             }
             else if(desiredState == State.humanIntake)
             {
+                //System.out.println("Human Intake Called");
                 humanIntake();
-                currentState = State.humanIntake;
-                timeInState = 0;
+                if(currentState != State.humanIntake)
+                {
+                    currentState = State.humanIntake;
+                    timeInState = 0;
+                }
             }
             else if(desiredState == State.lowPossession)
             {
+                //System.out.println("Low Possession Called");
                 lowPossession();
-                currentState = State.lowPossession;
-                timeInState = 0;
+                if(currentState != State.lowPossession)
+                {
+                    currentState = State.lowPossession;
+                    timeInState = 0;
+                }
             }
             else if(desiredState == State.shoot)
             {
+                //System.out.println("Shoot Called");
                 shoot();
-                currentState = State.shoot;
-                timeInState = 0;
+                if(currentState != State.shoot)
+                {
+                    currentState = State.shoot;
+                    timeInState = 0;
+                }
+            }
+            else if(desiredState == State.trussPass)
+            {
+                //System.out.println("Truss Pass Called");
+                shoot();
+                if(currentState != State.trussPass)
+                {
+                    currentState = State.trussPass;
+                    timeInState = 0;
+                }
             }
             else if(desiredState == State.shooterReset)
             {
+                //System.out.println("Shooter Reset Called");
                 shooterReset();
-                currentState = State.shooterReset;
-                timeInState = 0;
+                if(currentState != State.shooterReset)
+                {
+                    currentState = State.shooterReset;
+                    timeInState = 0;
+                }
             }
             else if(desiredState == State.trussPrep)
             {
+                //System.out.println("Truss Prep Called");
                 openJaw();
+                if(currentState != State.trussPrep)
+                {
                 currentState = State.trussPrep;
                 timeInState = 0;
+                }
                 desiredState = State.trussPass;
             }
             else if(desiredState == State.shotPrep)
             {
+                //System.out.println("Shot Prep Called");
                 openJaw();
+                if(currentState != State.shotPrep)
+                {
                 currentState = State.shotPrep;
                 timeInState = 0;
+                }
                 desiredState = State.shoot;
             }
         }
@@ -202,31 +239,33 @@ public class Jaws {
     
     public void raiseJaw()
     {
-        if(!jawPos)
-        {
-            //True is activated and false is not...as far as I know
-            bottomJawLeftSolenoid.set(true);
-            bottomJawRightSolenoid.set(true);
-            jawPos = true;
-        }
+        //System.out.println("raiseJaw");
+        //True is activated and false is not...as far as I know
+        bottomJawLeftSolenoid.set(false);
+        bottomJawRightSolenoid.set(false);
+        jawPos = true;
+    }
+    
+        public void lowerJaw()
+    {
+        //System.out.println("Lower Jaw");
+        bottomJawLeftSolenoid.set(true);
+        bottomJawRightSolenoid.set(true);
+        jawPos = false;
     }
     
     public void openJaw()
     {
-        if(!jawAng)
-        {
-            topJawSolenoid.set(true);
-            jawAng = true;
-        }
+        //System.out.println("Open Jaw");
+        topJawSolenoid.set(true);
+        jawAng = true;
     }
     
     public void closeJaw()
     {
-        if(jawAng)
-        {
-            topJawSolenoid.set(false);
-            jawAng = false;
-        }
+        //System.out.println("Close Jaw");
+        topJawSolenoid.set(false);
+        jawAng = false;
     }
     
     public void intakeRoller()
@@ -272,19 +311,17 @@ public class Jaws {
     {
         raiseJaw();
         closeJaw();
-        offRoller();
     }
     
     public void lowPossession()
     {
         lowerJaw();
         closeJaw();
-        offRoller();
     }
     
     public void highPass()
     {
         raiseJaw();
-        openJaw();     
+        closeJaw();     
     }
 }
