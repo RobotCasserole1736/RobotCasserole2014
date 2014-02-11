@@ -28,6 +28,8 @@ public class MrRoboto extends IterativeRobot {
     
     static boolean canAdjustJaw = true;
     
+    Vision vision;
+    
     // Talon motor IDs
     public final int FRONT_LEFT_MTRID = 4;
     public final int FRONT_RIGHT_MTRID = 1;
@@ -103,6 +105,9 @@ public class MrRoboto extends IterativeRobot {
         this.xmissionSol1 = new Solenoid(XMISSION_SOL1_ID);
         this.xmissionCompressor = new Compressor(PRESSURE_SW_ID, COMPRESSOR_RELAY_ID);
         
+        //Construct Camera
+        vision = new Vision();
+        
         //Construct joystick
         mainJoy = new Joystick(1);
         shooterJoy = new Joystick(2);
@@ -123,6 +128,11 @@ public class MrRoboto extends IterativeRobot {
      * This function is called periodically during autonomous
      */
     public void autonomousPeriodic() {
+        double visionStartTime = Timer.getFPGATimestamp();
+        while(!vision.isTargetHot() && (Timer.getFPGATimestamp() - visionStartTime) < 5)
+        {
+            
+        }
         autoDriveThenShoot();
     }
     

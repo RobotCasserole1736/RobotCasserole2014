@@ -109,7 +109,7 @@ public class Jaws {
             {
                 desiredState = State.humanIntake;
             }
-            if(shooterJoy.getRawButton(5) && currentState != State.highPossession && currentState != State.defense)
+            if(shooterJoy.getRawButton(5) && currentState != State.highPossession && currentState != State.defense && currentState != State.lowPossession)
             {
                 desiredState = State.trussPass;
             }
@@ -117,13 +117,17 @@ public class Jaws {
             {
                 desiredState = State.trussPrep;
             }
-            else if(shooterJoy.getRawButton(6) && currentState != State.highPossession && currentState != State.defense)
+            else if(shooterJoy.getRawButton(6) && currentState != State.highPossession && currentState != State.defense && currentState != State.lowPossession)
             {   
                 desiredState = State.shoot;
             }
             else if(shooterJoy.getRawButton(6) && currentState == State.highPossession)
             {   
                 desiredState = State.shotPrep;
+            }
+            else if(shooterJoy.getRawButton(6) && currentState == State.lowPossession)
+            {
+                desiredState = State.lowPossession;
             }
             else if(shooterJoy.getRawButton(9) && shooterJoy.getRawButton(10))
             {
