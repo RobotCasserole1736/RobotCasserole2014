@@ -115,13 +115,15 @@ public class MrRoboto extends IterativeRobot {
         jaw = new Jaws(bottomJawLeftSolenoidId, bottomJawRightSolenoidId, topJawSolenoidId, rollerTalonId, RshooterSolenoidId, LshooterSolenoidId, shooterJoy);
         
         xmissionCompressor.start();
-        xmissionSol1.set(true);  //set to high gear by default
-        
     }
     public void disabledInit(){
         jaw.raiseJaw();
         jaw.closeJaw();
         jaw.shooterReset();
+    }
+    
+    public void autonomousInit() {
+        xmissionSol1.set(true);  //set to high gear by default
     }
 
     /**
@@ -171,12 +173,15 @@ public class MrRoboto extends IterativeRobot {
             driveTrain.drive(0, 0);
         }
     }
+    
+    public void teleopInit() {
+        xmissionSol1.set(true);  //set to high gear by default
+    }
 
     /**
      * This function is called periodically during operator control
      */
-    public void teleopPeriodic() 
-    {
+    public void teleopPeriodic() {
         driveTrain.arcadeDrive(mainJoy.getRawAxis(2), mainJoy.getRawAxis(4));
         jaw.update();
         if(mainJoy.getRawButton(5))
