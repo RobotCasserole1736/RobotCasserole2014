@@ -121,10 +121,6 @@ public class MrRoboto extends IterativeRobot {
         jaw.closeJaw();
         jaw.shooterReset();
     }
-    
-    public void autonomousInit() {
-        xmissionSol1.set(true);  //set to high gear by default
-    }
 
     /**
      * This function is called periodically during autonomous
@@ -173,10 +169,6 @@ public class MrRoboto extends IterativeRobot {
             driveTrain.drive(0, 0);
         }
     }
-    
-    public void teleopInit() {
-        xmissionSol1.set(true);  //set to high gear by default
-    }
 
     /**
      * This function is called periodically during operator control
@@ -186,11 +178,11 @@ public class MrRoboto extends IterativeRobot {
         jaw.update();
         if(mainJoy.getRawButton(5))
         {
-            xmissionSol1.set(true);
+            xmissionSol1.set(false);
         }
         else if(mainJoy.getRawButton(6))
         {
-            xmissionSol1.set(false);
+            xmissionSol1.set(true);
         }
     }
     
