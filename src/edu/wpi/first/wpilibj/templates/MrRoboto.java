@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.templates.Jaws.State;
+import edu.wpi.first.wpilibj.AnalogChannel;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -30,6 +32,9 @@ public class MrRoboto extends IterativeRobot {
     
     Vision vision;
     
+    public final double distanceMultiplier = 1;
+    public final double pressureMultiplier = 1;
+    
     // Talon motor IDs
     public final int FRONT_LEFT_MTRID = 4;
     public final int FRONT_RIGHT_MTRID = 1;
@@ -43,6 +48,18 @@ public class MrRoboto extends IterativeRobot {
     public final int COMPRESSOR_RELAY_ID = 8;
     public final int PRESSURE_SW_ID = 14;
     
+    //Encoder ids
+    public final int R_ENCODER_ID1 = 1;
+    public final int R_ENCODER_ID2 = 2;
+    public final int L_ENCODER_ID1 = 3;
+    public final int L_ENCODER_ID2 = 4;
+    
+    //Ultrasonic sensor id
+    public final int ULTRASONIC_SENSOR_ID = 1;
+    
+    //Pressure sensor
+    public final int PRESSURE_SENSOR_ID = 2;
+    
     //Jaw ids
     public final int bottomJawLeftSolenoidId = 3;
     public final int bottomJawRightSolenoidId = 4;
@@ -53,8 +70,9 @@ public class MrRoboto extends IterativeRobot {
     
     //Autonomous values
     public static double startTime = -1;
-    public static int delay = 0;
-    public static int secondDelay = 0;
+    public static double delay = 1;
+    public static double secondDelay = 1.1;
+    
     
     // Variable/Object declarations go here
     
@@ -82,6 +100,11 @@ public class MrRoboto extends IterativeRobot {
     Solenoid xmissionSol1;
     Compressor xmissionCompressor;
     
+    //Ultrasonic sensor
+    AnalogChannel ultraSonicSensor;
+    
+    //Pressure Sensor
+    AnalogChannel pressureSensor;
     
     // End variable/constant declaration
     
@@ -115,6 +138,12 @@ public class MrRoboto extends IterativeRobot {
         jaw = new Jaws(bottomJawLeftSolenoidId, bottomJawRightSolenoidId, topJawSolenoidId, rollerTalonId, RshooterSolenoidId, LshooterSolenoidId, shooterJoy);
         
         xmissionCompressor.start();
+        
+        leftEncoder = new Encoder(L_ENCODER_ID1, L_ENCODER_ID2);
+        rightEncoder = new Encoder(R_ENCODER_ID1, R_ENCODER_ID2);
+        
+        ultraSonicSensor = new AnalogChannel(ULTRASONIC_SENSOR_ID);
+        pressureSensor = new AnalogChannel(PRESSURE_SENSOR_ID);
     }
     public void disabledInit(){
         jaw.raiseJaw();
@@ -126,6 +155,8 @@ public class MrRoboto extends IterativeRobot {
      * This function is called periodically during autonomous
      */
     public void autonomousPeriodic() {
+        SmartDashboard.putNumber("Robot Speed", leftEncoder.getRate());
+        SmartDashboard.putNumber("Air Pressure", pressureSensor.getVoltage()*pressureMultiplier);
         double visionStartTime = Timer.getFPGATimestamp();
         while(!vision.isTargetHot() && (Timer.getFPGATimestamp() - visionStartTime) < 5)
         {
@@ -144,36 +175,19 @@ public class MrRoboto extends IterativeRobot {
         else if(startTime + delay > Timer.getFPGATimestamp() && startTime + secondDelay < Timer.getFPGATimestamp())
         {
             driveTrain.drive(0, 0);
-            jaw.openJaw();
-            jaw.shoot();
+            jaw.desiredState = State.shotPrep;
         }
-        else
-        {
-            jaw.shooterReset();
-        }
-    }
-    
-    public void autoShootThenDrive() {
-        if(startTime == -1) {
-            startTime = Timer.getFPGATimestamp();
-            jaw.openJaw();
-            jaw.shoot();
-        }
-        if(startTime + delay < Timer.getFPGATimestamp())
-        {
-            jaw.shooterReset();
-            driveTrain.drive(1, 0);
-        }
-        else
-        {
-            driveTrain.drive(0, 0);
-        }
+        jaw.update();
     }
 
     /**
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
+        SmartDashboard.putNumber("Robot Speed", leftEncoder.getRate());
+        SmartDashboard.putNumber("Distance to Wall", ultraSonicSensor.getVoltage()*distanceMultiplier);
+        SmartDashboard.putNumber("Air Pressure", pressureSensor.getVoltage()*pressureMultiplier);
+        SmartDashboard.putBoolean("Low Gear", xmissionSol1.get());
         driveTrain.arcadeDrive(mainJoy.getRawAxis(2), mainJoy.getRawAxis(4));
         jaw.update();
         if(mainJoy.getRawButton(5))

@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Jaws {
     Solenoid bottomJawLeftSolenoid, bottomJawRightSolenoid, topJawSolenoid, LshooterSolenoid, RshooterSolenoid;
@@ -21,7 +22,7 @@ public class Jaws {
     Joystick shooterJoy;
     
     //Array of time in seconds that it takes to complete each state
-    double[] stateTimers = {0, 0, 0, 0, 0, 0, 0.25, 1, 1, 1, 1};
+    double[] stateTimers = {0, 0, 0, 0.25, 1, 1, 1, 1};
     double timeInState = 0;
     double lastTime = 0;
     
@@ -29,6 +30,7 @@ public class Jaws {
     public boolean jawPos = true;
     //Jaw angle - false is default and closed position, true is open.
     public boolean jawAng = false;
+    public double lastDPadval = 0;
     
     public Jaws(int bottomJawLeftSolenoidId, int bottomJawRightSolenoidId, int topJawSolenoidId, int rollerTalonId, int RshooterSolenoidId, int LshooterSolenoidId, Joystick shooterJoy)
     {   
@@ -41,22 +43,20 @@ public class Jaws {
         this.shooterJoy = shooterJoy;
     }
     
-    static class State{
-        static int defense = 0;
-        static int floorIntake = 1;
-        static int humanIntake = 2;
-        static int lowPossession = 3;
-        static int highPossession = 4;
-        static int highPass = 5;
-        static int trussPass = 6;
-        static int shoot = 7;
-        static int shooterReset = 8;
-        static int shotPrep = 9;
-        static int trussPrep = 10;
+    public static class State{
+        static int floorIntake = 0;
+        static int humanIntake = 1;
+        static int highPossession = 2;
+        static int trussPass = 3;
+        static int shoot = 4;
+        static int shooterReset = 5;
+        static int shotPrep = 6;
+        static int trussPrep = 7;
     }
     
     public void update()
     {
+        SmartDashboard.putNumber("Truss Delay", stateTimers[State.trussPass]);
         if(shooterJoy.getRawAxis(3) < -0.5)
         {
             intakeRoller();
@@ -69,6 +69,21 @@ public class Jaws {
         {
             rollerTalon.set(0);
         }
+        if(shooterJoy.getRawAxis(6) < -0.5 && lastDPadval < 0)
+        {
+            if(stateTimers[State.trussPass] > 0.1)
+            {
+                stateTimers[State.trussPass] = stateTimers[State.trussPass] - 0.05;
+            }
+        }
+        else if(shooterJoy.getRawAxis(6) > 0.5 && lastDPadval > 0)
+        {
+            if(stateTimers[State.trussPass] < 0.5)
+            {
+                stateTimers[State.trussPass] = stateTimers[State.trussPass] + 0.05;
+            }
+        }
+        lastDPadval = shooterJoy.getRawAxis(6);
         double currentTime = Timer.getFPGATimestamp();
         timeInState += currentTime - lastTime;
         lastTime = currentTime;
@@ -109,7 +124,7 @@ public class Jaws {
             {
                 desiredState = State.humanIntake;
             }
-            if(shooterJoy.getRawButton(5) && currentState != State.highPossession && currentState != State.defense && currentState != State.floorIntake)
+            if(shooterJoy.getRawButton(5) && currentState != State.highPossession && currentState != State.floorIntake)
             {
                 desiredState = State.trussPass;
             }
@@ -121,7 +136,7 @@ public class Jaws {
             {
                 desiredState = State.floorIntake;
             }
-            else if(shooterJoy.getRawButton(6) && currentState != State.highPossession && currentState != State.defense && currentState != State.floorIntake)
+            else if(shooterJoy.getRawButton(6) && currentState != State.highPossession && currentState != State.floorIntake)
             {   
                 desiredState = State.shoot;
             }
@@ -135,12 +150,12 @@ public class Jaws {
             }
             else if(shooterJoy.getRawButton(9) && shooterJoy.getRawButton(10))
             {
-                desiredState = State.defense;
+                desiredState = State.highPossession;
             }
         }
         if(timeInState >= stateTimers[currentState])
         {
-            if(desiredState == State.defense || desiredState == State.highPossession)
+            if(desiredState == State.highPossession)
             {
                 //System.out.println("High Possession Called");
                 highPossession();
@@ -160,16 +175,6 @@ public class Jaws {
                     timeInState = 0;
                 }
             }
-            else if(desiredState == State.highPass)
-            {
-                //System.out.println("High Pass Called");
-                highPass();
-                if(currentState != State.highPass)
-                {
-                    currentState = State.highPass;
-                    timeInState = 0;
-                }
-            }
             else if(desiredState == State.humanIntake)
             {
                 //System.out.println("Human Intake Called");
@@ -177,16 +182,6 @@ public class Jaws {
                 if(currentState != State.humanIntake)
                 {
                     currentState = State.humanIntake;
-                    timeInState = 0;
-                }
-            }
-            else if(desiredState == State.lowPossession)
-            {
-                //System.out.println("Low Possession Called");
-                lowPossession();
-                if(currentState != State.lowPossession)
-                {
-                    currentState = State.lowPossession;
                     timeInState = 0;
                 }
             }
@@ -226,8 +221,8 @@ public class Jaws {
                 openJaw();
                 if(currentState != State.trussPrep)
                 {
-                currentState = State.trussPrep;
-                timeInState = 0;
+                    currentState = State.trussPrep;
+                    timeInState = 0;
                 }
                 desiredState = State.trussPass;
             }
@@ -237,8 +232,8 @@ public class Jaws {
                 openJaw();
                 if(currentState != State.shotPrep)
                 {
-                currentState = State.shotPrep;
-                timeInState = 0;
+                    currentState = State.shotPrep;
+                    timeInState = 0;
                 }
                 desiredState = State.shoot;
             }
