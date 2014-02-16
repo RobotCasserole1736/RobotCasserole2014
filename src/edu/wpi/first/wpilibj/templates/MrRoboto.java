@@ -189,7 +189,7 @@ public class MrRoboto extends IterativeRobot {
     }
     
     public void autoDriveThenShoot() {
-        if(startTime == -1) {
+        if(startTime < 0) {
             startTime = Timer.getFPGATimestamp();
             System.out.println("StartTime: " + startTime);
             System.out.println("StartTime + Delay: " + (startTime + delay));
@@ -198,7 +198,7 @@ public class MrRoboto extends IterativeRobot {
             driveTrain.drive(-0.25, 0);
             System.out.println("Driving");
         }
-        else if(startTime + delay > Timer.getFPGATimestamp() && startTime + secondDelay < Timer.getFPGATimestamp())
+        else if(startTime + secondDelay < Timer.getFPGATimestamp())
         {
             System.out.println("Stopping and shooting");
             driveTrain.drive(0, 0);
