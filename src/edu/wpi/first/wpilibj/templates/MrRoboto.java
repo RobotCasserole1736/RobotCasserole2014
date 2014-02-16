@@ -31,9 +31,10 @@ public class MrRoboto extends IterativeRobot {
     static boolean canAdjustJaw = true;
     
     Vision vision;
+    boolean targetFound = false;
     
     public final double distanceMultiplier = 1;
-    public final double pressureMultiplier = 1;
+    public final double pressureMultiplier = 34.7;
     
     // Talon motor IDs
     public final int FRONT_LEFT_MTRID = 4;
@@ -68,7 +69,11 @@ public class MrRoboto extends IterativeRobot {
     public final int RshooterSolenoidId = 5;
     public final int LshooterSolenoidId = 6;
     
+    //Cameralight ID
+    public final int cameraLightId = 8;
+    
     //Autonomous values
+    public static double visionStartTime = -1;
     public static double startTime = -1;
     public static double delay = 1;
     public static double secondDelay = 1.1;
@@ -106,6 +111,8 @@ public class MrRoboto extends IterativeRobot {
     //Pressure Sensor
     AnalogChannel pressureSensor;
     
+    Solenoid cameraLight;
+    
     // End variable/constant declaration
     
     /**
@@ -130,6 +137,10 @@ public class MrRoboto extends IterativeRobot {
         
         //Construct Camera
         vision = new Vision();
+        
+        //Construct cameraLight
+        cameraLight = new Solenoid(cameraLightId);
+        cameraLight.set(true);
         
         //Construct joystick
         mainJoy = new Joystick(1);
@@ -156,24 +167,37 @@ public class MrRoboto extends IterativeRobot {
      */
     public void autonomousPeriodic() {
         SmartDashboard.putNumber("Robot Speed", leftEncoder.getRate());
-        SmartDashboard.putNumber("Air Pressure", pressureSensor.getVoltage()*pressureMultiplier);
-        double visionStartTime = Timer.getFPGATimestamp();
-        while(!vision.isTargetHot() && (Timer.getFPGATimestamp() - visionStartTime) < 5)
+        SmartDashboard.putNumber("Air Pressure", pressureSensor.getVoltage()*pressureMultiplier-20);
+        if(visionStartTime < 0)
+            visionStartTime = Timer.getFPGATimestamp();
+        if((Timer.getFPGATimestamp() - visionStartTime) < 5)
         {
-            
+            if(vision.isTargetHot())
+            {
+                targetFound = true;
+                autoDriveThenShoot();
+            }
         }
-        autoDriveThenShoot();
+        else
+        {
+            if(!targetFound)
+                autoDriveThenShoot();
+        }
     }
     
     public void autoDriveThenShoot() {
         if(startTime == -1) {
             startTime = Timer.getFPGATimestamp();
+            System.out.println("StartTime: " + startTime);
+            System.out.println("StartTime + Delay: " + (startTime + delay));
         }
         if(startTime + delay < Timer.getFPGATimestamp()) {
-            driveTrain.drive(1, 0);
+            driveTrain.drive(-0.25, 0);
+            System.out.println("Driving");
         }
         else if(startTime + delay > Timer.getFPGATimestamp() && startTime + secondDelay < Timer.getFPGATimestamp())
         {
+            System.out.println("Stopping and shooting");
             driveTrain.drive(0, 0);
             jaw.desiredState = State.shotPrep;
         }
@@ -188,16 +212,32 @@ public class MrRoboto extends IterativeRobot {
         SmartDashboard.putNumber("Distance to Wall", ultraSonicSensor.getVoltage()*distanceMultiplier);
         SmartDashboard.putNumber("Air Pressure", pressureSensor.getVoltage()*pressureMultiplier);
         SmartDashboard.putBoolean("Low Gear", xmissionSol1.get());
-        driveTrain.arcadeDrive(mainJoy.getRawAxis(2), mainJoy.getRawAxis(4));
+        double shifterTimer = Timer.getFPGATimestamp();
+        int shifterDelay = 1;
         jaw.update();
+        driveTrain.arcadeDrive(mainJoy.getRawAxis(2), mainJoy.getRawAxis(4));
         if(mainJoy.getRawButton(5))
-        {
-            xmissionSol1.set(false);
-        }
-        else if(mainJoy.getRawButton(6))
         {
             xmissionSol1.set(true);
         }
+        else if(mainJoy.getRawButton(6))
+        {
+            xmissionSol1.set(false);
+        }
+//        driveTrain.arcadeDrive(shooterJoy.getRawAxis(2), shooterJoy.getRawAxis(4));
+//        if(shooterJoy.getRawButton(3))
+//        {
+//            if(xmissionSol1.get() == false && shifterTimer > shifterDelay)
+//            {
+//                xmissionSol1.set(true);
+//                shifterTimer = 0;
+//            }
+//            else if(xmissionSol1.get() == true && shifterTimer > shifterDelay)
+//            {
+//                xmissionSol1.set(false);
+//                shifterTimer = 0;
+//            }
+//        }
     }
     
     /**

@@ -22,7 +22,7 @@ public class Jaws {
     Joystick shooterJoy;
     
     //Array of time in seconds that it takes to complete each state
-    double[] stateTimers = {0, 0, 0, 0.25, 1, 1, 1, 1};
+    double[] stateTimers = {0, 0, 0, 0.325, 1, 1, 1, 1};
     double timeInState = 0;
     double lastTime = 0;
     
@@ -73,14 +73,14 @@ public class Jaws {
         {
             if(stateTimers[State.trussPass] > 0.1)
             {
-                stateTimers[State.trussPass] = stateTimers[State.trussPass] - 0.05;
+                stateTimers[State.trussPass] = stateTimers[State.trussPass] - 0.025;
             }
         }
         else if(shooterJoy.getRawAxis(6) > 0.5 && lastDPadval > 0)
         {
             if(stateTimers[State.trussPass] < 0.5)
             {
-                stateTimers[State.trussPass] = stateTimers[State.trussPass] + 0.05;
+                stateTimers[State.trussPass] = stateTimers[State.trussPass] + 0.025;
             }
         }
         lastDPadval = shooterJoy.getRawAxis(6);
@@ -278,7 +278,7 @@ public class Jaws {
     
     public void outRoller()
     {
-        rollerTalon.set(-1);
+        rollerTalon.set(shooterJoy.getRawAxis(3) * -1);
     }
     
     public void offRoller()

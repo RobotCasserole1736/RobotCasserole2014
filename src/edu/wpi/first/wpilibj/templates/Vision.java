@@ -60,15 +60,31 @@ public class Vision
 		double verticalScore;
     };
     
-    public void Vision()
+    public Vision()
     {
-        camera = AxisCamera.getInstance();  // get an instance of the camera
+        camera = AxisCamera.getInstance("10.17.36.11");  // get an instance of the camera
+        if(camera == null)
+            System.out.println("Camera not initialized");
+        else
+            System.out.println("Camera initialized");
         cc = new CriteriaCollection();      // create the criteria for the particle filter
         cc.addCriteria(NIVision.MeasurementType.IMAQ_MT_AREA, AREA_MINIMUM, 65535, false);
     }
     
+//    public boolean initCamera()
+//    {
+//        camera = AxisCamera.getInstance("10.17.36.11");
+//        if(camera == null)
+//            return false;
+//        cc = new CriteriaCollection();      // create the criteria for the particle filter
+//        cc.addCriteria(NIVision.MeasurementType.IMAQ_MT_AREA, AREA_MINIMUM, 65535, false);
+//        return true;
+//    }
+    
     boolean isTargetHot()
     {
+        if(camera == null)
+            return false;
         TargetReport target = new TargetReport();
 	int verticalTargets[] = new int[MAX_PARTICLES];
 	int horizontalTargets[] = new int[MAX_PARTICLES];
@@ -86,8 +102,10 @@ public class Vision
                     image = camera.getImage(); // comment if using stored images
                 } catch (AxisCameraException ex) {
                     ex.printStackTrace();
+                    return false;
                 } catch (NIVisionException ex) {
                     ex.printStackTrace();
+                    return false;
                 }
                 //ColorImage image;                           // next 2 lines read image from flash on cRIO
                 //image = new RGBImage("/testImage.jpg");		// get the sample image from the cRIO flash
