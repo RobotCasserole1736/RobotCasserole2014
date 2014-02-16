@@ -78,6 +78,9 @@ public class MrRoboto extends IterativeRobot {
     public static double delay = 1;
     public static double secondDelay = 1.1;
     
+    //Shifter
+    public static boolean lastShifterVal = false;
+    
     
     // Variable/Object declarations go here
     
@@ -212,32 +215,19 @@ public class MrRoboto extends IterativeRobot {
         SmartDashboard.putNumber("Distance to Wall", ultraSonicSensor.getVoltage()*distanceMultiplier);
         SmartDashboard.putNumber("Air Pressure", pressureSensor.getVoltage()*pressureMultiplier);
         SmartDashboard.putBoolean("Low Gear", xmissionSol1.get());
-        double shifterTimer = Timer.getFPGATimestamp();
-        int shifterDelay = 1;
         jaw.update();
         driveTrain.arcadeDrive(mainJoy.getRawAxis(2), mainJoy.getRawAxis(4));
-        if(mainJoy.getRawButton(5))
+        if(mainJoy.getRawButton(6) && lastShifterVal == false)
         {
-            xmissionSol1.set(true);
+            xmissionSol1.set(!xmissionSol1.get());
         }
-        else if(mainJoy.getRawButton(6))
-        {
-            xmissionSol1.set(false);
-        }
+        lastShifterVal = mainJoy.getRawButton(6);
 //        driveTrain.arcadeDrive(shooterJoy.getRawAxis(2), shooterJoy.getRawAxis(4));
-//        if(shooterJoy.getRawButton(3))
+//        if(shooterJoy.getRawButton(3) && lastShifterVal == false)
 //        {
-//            if(xmissionSol1.get() == false && shifterTimer > shifterDelay)
-//            {
-//                xmissionSol1.set(true);
-//                shifterTimer = 0;
-//            }
-//            else if(xmissionSol1.get() == true && shifterTimer > shifterDelay)
-//            {
-//                xmissionSol1.set(false);
-//                shifterTimer = 0;
-//            }
+//            xmissionSol1.set(!xmissionSol1.get());
 //        }
+//        lastShifterVal = shooterJoy.getRawButton(3);
     }
     
     /**

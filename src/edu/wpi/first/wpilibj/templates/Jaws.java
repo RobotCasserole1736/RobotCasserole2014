@@ -69,14 +69,22 @@ public class Jaws {
         {
             rollerTalon.set(0);
         }
-        if(shooterJoy.getRawAxis(6) < -0.5 && lastDPadval < 0)
+        if(shooterJoy.getRawButton(8))
+        {
+            openJaw();
+        }
+        else if(shooterJoy.getRawButton(7))
+        {
+            closeJaw();
+        }
+        if(shooterJoy.getRawAxis(6) < -0.5 && lastDPadval == 0)
         {
             if(stateTimers[State.trussPass] > 0.1)
             {
                 stateTimers[State.trussPass] = stateTimers[State.trussPass] - 0.025;
             }
         }
-        else if(shooterJoy.getRawAxis(6) > 0.5 && lastDPadval > 0)
+        else if(shooterJoy.getRawAxis(6) > 0.5 && lastDPadval == 0)
         {
             if(stateTimers[State.trussPass] < 0.5)
             {
