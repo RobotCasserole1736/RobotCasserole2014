@@ -22,7 +22,7 @@ public class Jaws {
     Joystick shooterJoy;
     
     //Array of time in seconds that it takes to complete each state
-    double[] stateTimers = {0, 0, 0, 0.325, 1, 1, 1, 1};
+    double[] stateTimers = {0, 0, 0, 0.325, 1.2, 1, 1, 1};
     double timeInState = 0;
     double lastTime = 0;
     

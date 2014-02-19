@@ -212,8 +212,8 @@ public class MrRoboto extends IterativeRobot {
         SmartDashboard.putNumber("Distance to Wall", ultraSonicSensor.getVoltage()*distanceMultiplier);
         SmartDashboard.putNumber("Air Pressure", pressureSensor.getVoltage()*pressureMultiplier);
         SmartDashboard.putBoolean("Low Gear", xmissionSol1.get());
-        double shifterTimer = Timer.getFPGATimestamp();
-        int shifterDelay = 1;
+//        double shifterTimer = Timer.getFPGATimestamp();
+//        int shifterDelay = 5;
         jaw.update();
         driveTrain.arcadeDrive(mainJoy.getRawAxis(2), mainJoy.getRawAxis(4));
         if(mainJoy.getRawButton(5))
