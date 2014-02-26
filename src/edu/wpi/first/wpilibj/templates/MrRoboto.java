@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.templates.Jaws.State;
 import edu.wpi.first.wpilibj.AnalogChannel;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,6 +28,11 @@ import edu.wpi.first.wpilibj.AnalogChannel;
  */
 public class MrRoboto extends IterativeRobot {
     // Constants go here - 0's are probably placeholders
+    
+    public SendableChooser autoChooser;
+    public Integer autoChooserVal;
+    public SendableChooser autoChooserLock;
+    public Boolean autonomousIsLocked;
     
     static boolean canAdjustJaw = true;
     
@@ -161,7 +167,21 @@ public class MrRoboto extends IterativeRobot {
         
         ultraSonicSensor = new AnalogChannel(ULTRASONIC_SENSOR_ID);
         pressureSensor = new AnalogChannel(PRESSURE_SENSOR_ID);
-    }
+        
+        this.autoChooserVal = new Integer(1);
+        this.autoChooser = new SendableChooser();
+        this.autoChooser.addDefault("Drive and Shoot", "1");
+        this.autoChooser.addObject("Just Drive", "2");
+        this.autoChooser.addObject("Nothing", "0");
+        
+        this.autonomousIsLocked = Boolean.TRUE;
+        this.autoChooserLock = new SendableChooser();
+        this.autoChooserLock.addDefault("Autonomous Locked", Boolean.TRUE);
+        this.autoChooserLock.addObject("Autonomous Unlocked", Boolean.FALSE);
+        
+        SmartDashboard.putData("Autonomous Mode Selection", autoChooser);
+        SmartDashboard.putData("Autonomous Lock", autoChooserLock);
+    }   
     public void disabledInit(){
         jaw.raiseJaw();
         jaw.closeJaw();
@@ -172,6 +192,8 @@ public class MrRoboto extends IterativeRobot {
     public void autonomousInit()
     {
         startTime = -1;
+        autoChooserVal = (Integer) autoChooser.getSelected();
+        autonomousIsLocked = (Boolean) autoChooser.getSelected();
     }
 
     /**
@@ -195,7 +217,21 @@ public class MrRoboto extends IterativeRobot {
 //            if(!targetFound)
 //                autoDriveThenShoot();
 //        }
-        autoDriveThenShoot();
+        // if unlocked and in drive+shoot mode
+        if (!autonomousIsLocked.booleanValue()) {
+            switch(autoChooserVal.intValue()) {
+            case 0:
+                break;
+            case 1:
+                autoDriveThenShoot();
+                break;
+            case 2:
+                autoDrive();
+                break;
+            }    
+        } else {
+            autoDriveThenShoot();
+        }
     }
     
     public void autoDriveThenShoot() {
@@ -220,7 +256,20 @@ public class MrRoboto extends IterativeRobot {
             jaw.shooterReset();
             jaw.currentState = State.humanIntake;
         }
-        //jaw.update();
+    }
+    
+    public void autoDrive() { 
+        if(startTime < 0) {
+            startTime = Timer.getFPGATimestamp();
+        }
+        if(startTime + delay > Timer.getFPGATimestamp()) {
+            driveTrain.drive(-0.7, 0.0001); //Just a little bit right because of motor bias
+        }
+        else if(startTime + secondDelay > Timer.getFPGATimestamp())
+        {
+            driveTrain.drive(0, 0);
+            //jaw.desiredState = State.shotPrep;
+        }
     }
 
     /**
