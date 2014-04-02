@@ -75,9 +75,9 @@ public class MrRoboto extends IterativeRobot {
     //Autonomous values
     public static double visionStartTime = -1;
     public static double startTime = -1;
-    public static double delay = 1.5;
-    public static double secondDelay = 2.75;
-    public static double thirdDelay = 4;
+    public static double delay = 1.6;
+    public static double secondDelay = 3.85;
+    public static double thirdDelay = 5.1;
     
     //Shifter
     public static boolean lastShifterVal = false;
@@ -172,6 +172,7 @@ public class MrRoboto extends IterativeRobot {
     public void autonomousInit()
     {
         startTime = -1;
+        xmissionSol1.set(false);
     }
 
     /**
@@ -204,7 +205,7 @@ public class MrRoboto extends IterativeRobot {
             jaw.openJaw();
         }
         if(startTime + delay > Timer.getFPGATimestamp()) {
-            driveTrain.drive(-0.7, 0.0001); //Just a little bit right because of motor bias
+            driveTrain.drive(-0.74, 0.0001); //Just a little bit right because of motor bias
         }
         else if(startTime + secondDelay > Timer.getFPGATimestamp())
         {
