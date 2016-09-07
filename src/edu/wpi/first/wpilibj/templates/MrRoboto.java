@@ -103,7 +103,7 @@ public class MrRoboto extends IterativeRobot {
     
     //Joystick
     Joystick mainJoy;
-    Joystick shooterJoy;
+    //Joystick shooterJoy; //single controller is best controller. We'll always remember you, Aaron.
     
     // Transmission
     Solenoid xmissionSol1;
@@ -148,9 +148,9 @@ public class MrRoboto extends IterativeRobot {
         
         //Construct joystick
         mainJoy = new Joystick(1);
-        shooterJoy = new Joystick(2);
+        //shooterJoy = new Joystick(2);
         
-        jaw = new Jaws(bottomJawLeftSolenoidId, bottomJawRightSolenoidId, topJawSolenoidId, rollerTalonId, RshooterSolenoidId, LshooterSolenoidId, shooterJoy);
+        jaw = new Jaws(bottomJawLeftSolenoidId, bottomJawRightSolenoidId, topJawSolenoidId, rollerTalonId, RshooterSolenoidId, LshooterSolenoidId, mainJoy);
         
         xmissionCompressor.start();
         
@@ -234,10 +234,12 @@ public class MrRoboto extends IterativeRobot {
         SmartDashboard.putBoolean("Low Gear", xmissionSol1.get());
         jaw.update();
         driveTrain.arcadeDrive(-mainJoy.getRawAxis(2), -mainJoy.getRawAxis(4));
-        if(mainJoy.getRawButton(6) && lastShifterVal == false)
-        {
-            xmissionSol1.set(!xmissionSol1.get());
-        }
+        
+       //DEMO MODE! NO SHIFT FOR YOU!
+        //if(mainJoy.getRawButton(6) && lastShifterVal == false)
+        //{
+        //    xmissionSol1.set(!xmissionSol1.get());
+        //}
         lastShifterVal = mainJoy.getRawButton(6);
 //        driveTrain.arcadeDrive(shooterJoy.getRawAxis(2), shooterJoy.getRawAxis(4));
 //        if(shooterJoy.getRawButton(3) && lastShifterVal == false)
