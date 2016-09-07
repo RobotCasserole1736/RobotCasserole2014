@@ -30,7 +30,7 @@ public class MrRoboto extends IterativeRobot {
     
     static boolean canAdjustJaw = true;
     
-    Vision vision;
+    //Vision vision;
     boolean targetFound = false;
     
     public final double distanceMultiplier = 1;
@@ -140,7 +140,7 @@ public class MrRoboto extends IterativeRobot {
         this.xmissionCompressor = new Compressor(PRESSURE_SW_ID, COMPRESSOR_RELAY_ID);
         
         //Construct Camera
-        vision = new Vision();
+        //vision = new Vision();
         
         //Construct cameraLight
         cameraLight = new Solenoid(cameraLightId);
@@ -233,7 +233,7 @@ public class MrRoboto extends IterativeRobot {
         SmartDashboard.putNumber("Air Pressure", pressureSensor.getVoltage()*pressureMultiplier);
         SmartDashboard.putBoolean("Low Gear", xmissionSol1.get());
         jaw.update();
-        driveTrain.arcadeDrive(mainJoy.getRawAxis(2), mainJoy.getRawAxis(4));
+        driveTrain.arcadeDrive(-mainJoy.getRawAxis(2), -mainJoy.getRawAxis(4));
         if(mainJoy.getRawButton(6) && lastShifterVal == false)
         {
             xmissionSol1.set(!xmissionSol1.get());
